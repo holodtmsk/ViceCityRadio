@@ -3,40 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA Vice City Radio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Vice City Radio</title>
 </head>
 <body>
-    <div id="station-name">V-Rock</div>
-    <div class="control-buttons">
-        <button onclick="prevStation()">Back</button>
-        <button onclick="nextStation()">Next</button>
+    <h1>Vice City Radio Stations</h1>
+
+    <div id="station-name">
+        <h2 id="current-station">V-Rock</h2>
     </div>
+
+    <audio id="radio-player" controls>
+        <source id="radio-source" src="{{ url_for('static', filename='audio/v_rock.mp3') }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <button id="play-stop-btn">Play/Stop</button>
+
+    <div>
+        <button onclick="switchStation('V-Rock', '{{ url_for('static', filename='audio/v_rock.mp3') }}')">V-Rock</button>
+        <button onclick="switchStation('Wave 103', '{{ url_for('static', filename='audio/wave_103.mp3') }}')">Wave 103</button>
+        <button onclick="switchStation('Emotion 98.3', '{{ url_for('static', filename='audio/emotion_98_3.mp3') }}')">Emotion 98.3</button>
+    </div>
+
     <script>
-        const stations = ["V-Rock", "Wave 103", "Emotion 98.3"];
-        let currentStationIndex = 0;
+        const audioPlayer = document.getElementById('radio-player');
+        const playStopBtn = document.getElementById('play-stop-btn');
 
-        function updateStation() {
-            document.getElementById('station-name').textContent = stations[currentStationIndex];
-        }
-
-        function prevStation() {
-            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
-            updateStation();
-        }
-
-        function nextStation() {
-            currentStationIndex = (currentStationIndex + 1) % stations.length;
-            updateStation();
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'MediaTrackPrevious') {
-                prevStation();
-            } else if (event.key === 'MediaTrackNext') {
-                nextStation();
+        // Play/Stop button logic
+        playStopBtn.addEventListener('click', function() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
             }
         });
+
+        // Function to switch radio stations
+        function switchStation(stationName, stationUrl) {
+            document.getElementById('current-station').textContent = stationName;
+            const randomStart = Math.random() * audioPlayer.duration;
+            audioPlayer.src = stationUrl;
+            audioPlayer.currentTime = randomStart;
+            audioPlayer.play();
+        }
+
+        // Autoplay the first station on page load
+        window.onload = function() {
+            audioPlayer.play();
+        };
     </script>
 </body>
 </html>
