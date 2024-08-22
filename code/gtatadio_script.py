@@ -1,21 +1,25 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler
+import os
 
 # Вставьте ваш токен здесь
 BOT_TOKEN = '7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w'
 
-async def start(update: Update, context: CallbackContext) -> None:
-    # Создаем кнопку, которая откроет ваше веб-приложение
-    button = InlineKeyboardButton("Open Web App", web_app={"url": "https://instagram-bot22-1d84ba019e98.herokuapp.com"})
-    keyboard = InlineKeyboardMarkup([[button]])
+# Функция для обработки команды /start
+async def start(update, context):
+    await update.message.reply_text('Hello!')
 
-    await update.message.reply_text('Click the button to open the app:', reply_markup=keyboard)
-
-# Создаем приложение Telegram Bot
+# Создание приложения Telegram Bot
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 
 # Добавляем обработчик команды /start
 app.add_handler(CommandHandler("start", start))
 
-# Запускаем бота
-app.run_polling()
+# Настройка Webhook
+PORT = int(os.environ.get('PORT', '8443'))
+app.run_webhook(
+    listen="0.0.0.0",
+    port=PORT,
+    url_path=BOT_TOKEN,
+    webhook_url=f"https://{os.environ.get('HEROKU_APP_NAME')}.herokuapp.com/{BOT_TOKEN}"
+)
+
