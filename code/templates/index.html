@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA Vice City Radio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="station-name">V-Rock</div>
+    <div class="control-buttons">
+        <button onclick="prevStation()">Back</button>
+        <button onclick="nextStation()">Next</button>
+    </div>
+    <script>
+        const stations = ["V-Rock", "Wave 103", "Emotion 98.3"];
+        let currentStationIndex = 0;
+
+        function updateStation() {
+            document.getElementById('station-name').textContent = stations[currentStationIndex];
+        }
+
+        function prevStation() {
+            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
+            updateStation();
+        }
+
+        function nextStation() {
+            currentStationIndex = (currentStationIndex + 1) % stations.length;
+            updateStation();
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'MediaTrackPrevious') {
+                prevStation();
+            } else if (event.key === 'MediaTrackNext') {
+                nextStation();
+            }
+        });
+    </script>
+</body>
+</html>

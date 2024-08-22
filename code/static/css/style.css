@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+    font-family: 'Pricedown', sans-serif;
+}
+#station-name {
+    font-size: 48px;
+    margin-bottom: 50px;
+    text-align: center;
+    color: #FF007F;
+}
+.control-buttons {
+    display: flex;
+    gap: 20px;
+}
+button {
+    font-size: 24px;
+    padding: 10px 20px;
+    background-color: #FF007F;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:active {
+    background-color: #cc0066;
+}
