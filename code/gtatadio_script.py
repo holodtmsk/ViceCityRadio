@@ -1,10 +1,21 @@
-from flask import Flask, render_template
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext
 
-app = Flask(__name__)
+# Вставьте ваш токен здесь
+BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+async def start(update: Update, context: CallbackContext) -> None:
+    # Создаем кнопку, которая откроет ваше веб-приложение
+    button = InlineKeyboardButton("Open Web App", web_app={"url": "https://your-app-name.herokuapp.com"})
+    keyboard = InlineKeyboardMarkup([[button]])
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    await update.message.reply_text('Click the button to open the app:', reply_markup=keyboard)
+
+# Создаем приложение Telegram Bot
+app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+# Добавляем обработчик команды /start
+app.add_handler(CommandHandler("start", start))
+
+# Запускаем бота
+app.run_polling()
