@@ -1,27 +1,45 @@
+from flask import Flask, render_template
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from threading import Thread
 
 # Вставьте ваш токен здесь
-BOT_TOKEN = 'ВАШ_ТОКЕН'
+BOT_TOKEN = '7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w'
+
+# Создание Flask приложения
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    # Это будет загружать файл index.html из директории templates
+    return render_template('index.html')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    # Логируем получение команды /start
-    print("Получена команда /start")
-    
+    # Логирование для отладки
+    print("Received /start command")
+
     # Создаем кнопку, которая откроет ваше веб-приложение
-    button = InlineKeyboardButton("Открыть Web App", web_app={"url": "https://instagram-bot22-1d84ba019e98.herokuapp.com"})
+    button = InlineKeyboardButton("Open Web App", url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
     keyboard = InlineKeyboardMarkup([[button]])
 
-    # Отправляем сообщение с кнопкой
-    await update.message.reply_text('Нажмите кнопку, чтобы открыть приложение:', reply_markup=keyboard)
+    await update.message.reply_text('Click the button to open the app:', reply_markup=keyboard)
 
-# Создаем приложение Telegram Bot
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+# Создание и настройка Telegram Bot приложения
+def run_telegram_bot():
+    telegram_app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-# Добавляем обработчик команды /start
-app.add_handler(CommandHandler("start", start))
+    # Добавляем обработчик команды /start
+    telegram_app.add_handler(CommandHandler("start", start))
 
-# Запускаем бота
-app.run_polling()
+    # Запуск Telegram бота
+    telegram_app.run_polling()
+
+if __name__ == '__main__':
+    # Запуск Telegram бота в отдельном потоке
+    bot_thread = Thread(target=run_telegram_bot)
+    bot_thread.start()
+
+    # Запуск Flask приложения
+    app.run(debug=True, use_reloader=False)  # Добавлено use_reloader=False для предотвращения двойного запуска
 
 
