@@ -1,25 +1,24 @@
-from telegram.ext import ApplicationBuilder, CommandHandler
-import os
+from flask import Flask, request
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext
 
-# Вставьте ваш токен здесь
+app = Flask(__name__)
+
 BOT_TOKEN = '7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w'
 
-# Функция для обработки команды /start
-async def start(update, context):
-    await update.message.reply_text('Hello!')
+async def start(update: Update, context: CallbackContext) -> None:
+    button = InlineKeyboardButton("Open Web App", web_app={"url": "https://ваш-домен.herokuapp.com"})
+    keyboard = InlineKeyboardMarkup([[button]])
+    await update.message.reply_text('Click the button to open the app:', reply_markup=keyboard)
 
-# Создание приложения Telegram Bot
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+telegram_app = ApplicationBuilder().token(BOT_TOKEN).build()
+telegram_app.add_handler(CommandHandler("start", start))
 
-# Добавляем обработчик команды /start
-app.add_handler(CommandHandler("start", start))
+@app.route('/' + BOT_TOKEN, methods=['POST'])
+def webhook():
+    update = Update.de_json(request.get_json(force=True), telegram_app.bot)
+    telegram_app.process_update(update)
+    return 'ok'
 
-# Настройка Webhook
-PORT = int(os.environ.get('PORT', '8443'))
-app.run_webhook(
-    listen="0.0.0.0",
-    port=PORT,
-    url_path=BOT_TOKEN,
-    webhook_url=f"https://{os.environ.get('HEROKU_APP_NAME')}.herokuapp.com/{BOT_TOKEN}"
-)
-
+if __name__ == "__main__":
+    app.run()
