@@ -1,0 +1,1 @@
+web: gunicorn gtatadio_script:app
