@@ -4,47 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vice City Radio</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <h1>Vice City Radio</h1>
+    
     <div>
-        <h1>Vice City Radio</h1>
-        <button onclick="prevStation()"><< Previous Station</button>
-        <button onclick="playPause()">Play/Pause</button>
-        <button onclick="nextStation()">Next Station >></button>
+        <button id="prevStationBtn"><< Prev Station</button>
+        <button id="playPauseBtn">Play</button>
+        <button id="nextStationBtn">Next Station >></button>
     </div>
+    
     <audio id="audioPlayer">
-        <source id="audioSource" src="{{ emotion_url }}" type="audio/mpeg">
+        <source id="audioSource" src="{{ current_station_url }}" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
     <script>
-        let stations = ["{{ emotion_url }}", "{{ vrock_url }}", "{{ wave_url }}"];
+        const stations = [
+            "{{ url_for('static', filename='audio/Emotion_98.3.mp3') }}",
+            "{{ url_for('static', filename='audio/V-Rock.mp3') }}",
+            "{{ url_for('static', filename='audio/Wave_103.mp3') }}"
+        ];
+
         let currentStationIndex = 0;
         const audioPlayer = document.getElementById('audioPlayer');
         const audioSource = document.getElementById('audioSource');
+        const playPauseBtn = document.getElementById('playPauseBtn');
 
-        function playPause() {
+        document.getElementById('prevStationBtn').addEventListener('click', () => {
+            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
+            changeStation();
+        });
+
+        document.getElementById('nextStationBtn').addEventListener('click', () => {
+            currentStationIndex = (currentStationIndex + 1) % stations.length;
+            changeStation();
+        });
+
+        playPauseBtn.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();
+                playPauseBtn.textContent = 'Pause';
             } else {
                 audioPlayer.pause();
+                playPauseBtn.textContent = 'Play';
             }
-        }
+        });
 
-        function nextStation() {
-            currentStationIndex = (currentStationIndex + 1) % stations.length;
+        function changeStation() {
             audioSource.src = stations[currentStationIndex];
             audioPlayer.load();
             audioPlayer.play();
-        }
-
-        function prevStation() {
-            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
-            audioSource.src = stations[currentStationIndex];
-            audioPlayer.load();
-            audioPlayer.play();
+            playPauseBtn.textContent = 'Pause';
         }
     </script>
 </body>
 </html>
-
