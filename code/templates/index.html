@@ -14,16 +14,16 @@
     </div>
 
     <audio id="radio-player" controls>
-        <source id="radio-source" src="{{ url_for('static', filename='audio/v_rock.mp3') }}" type="audio/mpeg">
+        <source id="radio-source" src="https://disk.yandex.ru/d/NSofbwMSIUqSdA" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
-    <button id="play-stop-btn">Play/Stop</button>
+    <button id="play-stop-btn">Play</button>
 
     <div>
-        <button onclick="switchStation('V-Rock', '{{ url_for('static', filename='audio/v_rock.mp3') }}')">V-Rock</button>
-        <button onclick="switchStation('Wave 103', '{{ url_for('static', filename='audio/wave_103.mp3') }}')">Wave 103</button>
-        <button onclick="switchStation('Emotion 98.3', '{{ url_for('static', filename='audio/emotion_98_3.mp3') }}')">Emotion 98.3</button>
+        <button onclick="switchStation('V-Rock', 'https://disk.yandex.ru/d/NSofbwMSIUqSdA')">V-Rock</button>
+        <button onclick="switchStation('Wave 103', 'https://disk.yandex.ru/d/WjhlOGNdtCbA5w')">Wave 103</button>
+        <button onclick="switchStation('Emotion 98.3', 'https://disk.yandex.ru/d/U3nGEWXN06uuYg')">Emotion 98.3</button>
     </div>
 
     <script>
@@ -34,23 +34,26 @@
         playStopBtn.addEventListener('click', function() {
             if (audioPlayer.paused) {
                 audioPlayer.play();
+                playStopBtn.textContent = 'Stop';
             } else {
                 audioPlayer.pause();
+                playStopBtn.textContent = 'Play';
             }
         });
 
         // Function to switch radio stations
         function switchStation(stationName, stationUrl) {
             document.getElementById('current-station').textContent = stationName;
-            const randomStart = Math.random() * audioPlayer.duration;
             audioPlayer.src = stationUrl;
-            audioPlayer.currentTime = randomStart;
+            audioPlayer.currentTime = Math.random() * audioPlayer.duration; // Случайная позиция старта
             audioPlayer.play();
+            playStopBtn.textContent = 'Stop';
         }
 
         // Autoplay the first station on page load
         window.onload = function() {
             audioPlayer.play();
+            playStopBtn.textContent = 'Stop';
         };
     </script>
 </body>
