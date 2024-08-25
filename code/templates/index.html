@@ -4,60 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vice City Radio</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background-color: #000; /* Черный фон */
+            color: #00aced; /* Синий цвет текста в стиле Blum */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #radio-container {
+            margin-top: 50px;
+        }
+
+        #radio-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background-color: #00aced;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #0084b4;
+        }
+    </style>
 </head>
 <body>
-    <h1>Vice City Radio</h1>
-    
-    <div>
-        <button id="prevStationBtn"><< Prev Station</button>
-        <button id="playPauseBtn">Play</button>
-        <button id="nextStationBtn">Next Station >></button>
+    <div id="radio-container">
+        <div id="radio-title">V-Rock</div> <!-- Название текущей радиостанции -->
+        <audio id="radio-player" controls>
+            <source id="radio-source" src="https://yadi.sk/d/NSofbwMSIUqSdA" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+        <br>
+        <button class="button" onclick="prevStation()"><< Previous Station</button>
+        <button class="button" onclick="togglePlay()">Play/Stop</button>
+        <button class="button" onclick="nextStation()">Next Station >></button>
     </div>
-    
-    <audio id="audioPlayer">
-        <source id="audioSource" src="{{ current_station_url }}" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
 
     <script>
         const stations = [
-            "{{ url_for('static', filename='audio/Emotion_98.3.mp3') }}",
-            "{{ url_for('static', filename='audio/V-Rock.mp3') }}",
-            "{{ url_for('static', filename='audio/Wave_103.mp3') }}"
+            {
+                name: 'Emotion 98.3',
+                url: 'https://yadi.sk/d/U3nGEWXN06uuYg'
+            },
+            {
+                name: 'V-Rock',
+                url: 'https://yadi.sk/d/NSofbwMSIUqSdA'
+            },
+            {
+                name: 'Wave 103',
+                url: 'https://yadi.sk/d/WjhlOGNdtCbA5w'
+            }
         ];
 
         let currentStationIndex = 0;
-        const audioPlayer = document.getElementById('audioPlayer');
-        const audioSource = document.getElementById('audioSource');
-        const playPauseBtn = document.getElementById('playPauseBtn');
 
-        document.getElementById('prevStationBtn').addEventListener('click', () => {
-            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
-            changeStation();
-        });
-
-        document.getElementById('nextStationBtn').addEventListener('click', () => {
-            currentStationIndex = (currentStationIndex + 1) % stations.length;
-            changeStation();
-        });
-
-        playPauseBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                playPauseBtn.textContent = 'Pause';
-            } else {
-                audioPlayer.pause();
-                playPauseBtn.textContent = 'Play';
-            }
-        });
-
-        function changeStation() {
-            audioSource.src = stations[currentStationIndex];
-            audioPlayer.load();
-            audioPlayer.play();
-            playPauseBtn.textContent = 'Pause';
+        function updateStation() {
+            const station = stations[currentStationIndex];
+            document.getElementById('radio-title').textContent = station.name;
+            document.getElementById('radio-source').src = station.url;
+            document.getElementById('radio-player').load();
         }
+
+        function prevStation() {
+            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
+            updateStation();
+        }
+
+        function nextStation() {
+            currentStationIndex = (currentStationIndex + 1) % stations.length;
+            updateStation();
+        }
+
+        function togglePlay() {
+            const player = document.getElementById('radio-player');
+            if (player.paused) {
+                player.play();
+            } else {
+                player.pause();
+            }
+        }
+
+        updateStation(); // Инициализация первой станции
     </script>
 </body>
 </html>
