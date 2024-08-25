@@ -4,73 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vice City Radio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Vice City Radio</h1>
-
-    <div class="radio-controls">
-        <button id="prev-button"><< Пред станция</button>
-        <button id="play-stop-btn">Play</button>
-        <button id="next-button">След станция >></button>
+    <div>
+        <h1>Vice City Radio</h1>
+        <button onclick="prevStation()"><< Previous Station</button>
+        <button onclick="playPause()">Play/Pause</button>
+        <button onclick="nextStation()">Next Station >></button>
     </div>
-
-    <div id="station-name">
-        <h2 id="current-station">V-Rock</h2>
-    </div>
+    <audio id="audioPlayer">
+        <source id="audioSource" src="{{ emotion_url }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
-        const stations = [
-            {
-                name: "V-Rock",
-                url: "https://disk.yandex.ru/d/NSofbwMSIUqSdA"
-            },
-            {
-                name: "Wave 103",
-                url: "https://disk.yandex.ru/d/WjhlOGNdtCbA5w"
-            },
-            {
-                name: "Emotion 98.3",
-                url: "https://disk.yandex.ru/d/U3nGEWXN06uuYg"
-            }
-        ];
-
+        let stations = ["{{ emotion_url }}", "{{ vrock_url }}", "{{ wave_url }}"];
         let currentStationIndex = 0;
-        let isPlaying = false;
-        const audioElement = new Audio(stations[currentStationIndex].url);
-        const stationNameElement = document.getElementById('current-station');
-        stationNameElement.textContent = stations[currentStationIndex].name;
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioSource = document.getElementById('audioSource');
 
-        document.getElementById('play-stop-btn').addEventListener('click', () => {
-            if (isPlaying) {
-                audioElement.pause();
-                document.getElementById('play-stop-btn').textContent = 'Play';
+        function playPause() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
             } else {
-                audioElement.play();
-                document.getElementById('play-stop-btn').textContent = 'Stop';
+                audioPlayer.pause();
             }
-            isPlaying = !isPlaying;
-        });
+        }
 
-        document.getElementById('prev-button').addEventListener('click', () => {
-            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
-            changeStation();
-        });
-
-        document.getElementById('next-button').addEventListener('click', () => {
+        function nextStation() {
             currentStationIndex = (currentStationIndex + 1) % stations.length;
-            changeStation();
-        });
+            audioSource.src = stations[currentStationIndex];
+            audioPlayer.load();
+            audioPlayer.play();
+        }
 
-        function changeStation() {
-            if (isPlaying) {
-                audioElement.pause();
-            }
-            audioElement.src = stations[currentStationIndex].url;
-            stationNameElement.textContent = stations[currentStationIndex].name;
-            if (isPlaying) {
-                audioElement.play();
-            }
+        function prevStation() {
+            currentStationIndex = (currentStationIndex - 1 + stations.length) % stations.length;
+            audioSource.src = stations[currentStationIndex];
+            audioPlayer.load();
+            audioPlayer.play();
         }
     </script>
 </body>
