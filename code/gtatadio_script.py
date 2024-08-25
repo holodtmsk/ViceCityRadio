@@ -17,7 +17,7 @@ def index():
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Создаем кнопку, которая откроет ваше веб-приложение
-    button = InlineKeyboardButton("Open Web App", url="https://Ваш-домен.herokuapp.com")
+    button = InlineKeyboardButton("Open Web App", url="https://instagram-bot22.herokuapp.com")
     keyboard = InlineKeyboardMarkup([[button]])
 
     await update.message.reply_text('Click the button to open the app:', reply_markup=keyboard)
