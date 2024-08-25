@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from threading import Thread
 import os
 
-# Вставьте ваш токен здесь
+# Ваш токен Telegram бота
 BOT_TOKEN = '7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w'
 
 # Создание Flask приложения
@@ -17,7 +17,7 @@ def index():
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Создаем кнопку, которая откроет ваше веб-приложение
-    button = InlineKeyboardButton("Open Web App", url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
+    button = InlineKeyboardButton("Open Web App", url="https://Ваш-домен.herokuapp.com")
     keyboard = InlineKeyboardMarkup([[button]])
 
     await update.message.reply_text('Click the button to open the app:', reply_markup=keyboard)
@@ -39,3 +39,5 @@ if __name__ == '__main__':
 
     # Запуск Flask приложения
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), use_reloader=False)
+
+
