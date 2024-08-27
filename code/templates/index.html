@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA Radio</title>
+    <title>Game Interface</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <div class="profile">
-            <div class="avatar">
-                <div class="avatar-circle">NN</div>
-            </div>
+            <div class="avatar">NN</div>
             <div class="name">name_name</div>
             <div class="balance">$1,100,000,000</div>
             <div class="tickets">
-                <img src="{{ url_for('static', filename='ticket.png') }}" alt="Ticket" class="ticket-icon">
-                <span>23</span>
+                <span class="ticket-icon">🎟️</span> 23
             </div>
         </div>
-
+        
         <div class="slot-game">
-            <div class="slot-header">
-                <span>SLOT GAME</span>
-                <button class="play-button">PLAY</button>
-            </div>
-            <img src="{{ url_for('static', filename='slot-machine.png') }}" alt="Slot Machine" class="slot-machine">
+            <span class="slot-game-text">SLOT GAME</span>
+            <img src="{{ url_for('static', filename='slot_machine.png') }}" alt="Slot Machine" class="slot-machine">
+            <button class="play-button">PLAY</button>
         </div>
 
         <button class="collect-button">Collect reward</button>
+    </div>
 
-        <div class="navbar">
-            <div class="nav-item">
-                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home" class="nav-icon">
-                <span>Home</span>
-            </div>
-            <div class="nav-item">
-                <img src="{{ url_for('static', filename='frens-icon.png') }}" alt="Frens" class="nav-icon">
-                <span>Frens</span>
-            </div>
-            <div class="nav-item">
-                <img src="{{ url_for('static', filename='wallet-icon.png') }}" alt="Wallet" class="nav-icon">
-                <span>Wallet</span>
-            </div>
+    <div class="navigation-bar">
+        <div class="nav-item">
+            <img src="{{ url_for('static', filename='home.png') }}" alt="Home" class="nav-icon">
+            <span>Home</span>
+        </div>
+        <div class="nav-item">
+            <img src="{{ url_for('static', filename='friends.png') }}" alt="Frens" class="nav-icon">
+            <span>Frens</span>
+        </div>
+        <div class="nav-item">
+            <img src="{{ url_for('static', filename='wallet.png') }}" alt="Wallet" class="nav-icon">
+            <span>Wallet</span>
         </div>
     </div>
 </body>
