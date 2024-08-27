@@ -17,22 +17,22 @@
         </div>
         <div class="slot-game">
             <div>Slot Game</div>
-            <span role="img" aria-label="Slot Machine">🎰</span>
+            <img src="{{ url_for('static', filename='images/slot_machine.png') }}" alt="Slot Machine" class="icon">
         </div>
         <a href="/collect_reward" class="button">Collect reward</a>
     </div>
 
     <div class="navbar">
         <a href="/home">
-            <span role="img" aria-label="Home">🏠</span>
+            <img src="{{ url_for('static', filename='images/home_icon.png') }}" alt="Home" class="icon">
             Home
         </a>
         <a href="/frens">
-            <span role="img" aria-label="Frens">👥</span>
+            <img src="{{ url_for('static', filename='images/frens_icon.png') }}" alt="Frens" class="icon">
             Frens
         </a>
         <a href="/wallet">
-            <span role="img" aria-label="Wallet">💼</span>
+            <img src="{{ url_for('static', filename='images/wallet_icon.png') }}" alt="Wallet" class="icon">
             Wallet
         </a>
     </div>
