@@ -4,7 +4,7 @@ import threading
 import os
 
 app = Flask(__name__)
-bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
+bot = telebot.TeleBot("ВАШ_ТОКЕН_ТЕЛЕГРАМ_БОТА")
 
 # Удаляем вебхук, если он установлен
 bot.remove_webhook()
@@ -19,7 +19,8 @@ def collect_reward():
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "Welcome to the game! Visit the web page to play.")
+    # Используем Markdown для форматирования ссылки
+    bot.reply_to(message, "Welcome to the game! [Visit the web page to play](https://instagram-bot22-1d84ba019e98.herokuapp.com).")
 
 def run_bot():
     bot.polling(non_stop=True)
