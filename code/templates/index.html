@@ -3,38 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>GTA Radio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <div class="profile-icon">NN</div>
-        <div class="name">name_name</div>
-        <div class="balance">$1,100,000,000</div>
-        <div class="tickets">
-            <span role="img" aria-label="Tickets">🎟️</span>
-            23
+        <div class="profile">
+            <div class="avatar">
+                <div class="avatar-circle">NN</div>
+            </div>
+            <div class="name">name_name</div>
+            <div class="balance">$1,100,000,000</div>
+            <div class="tickets">
+                <img src="{{ url_for('static', filename='ticket.png') }}" alt="Ticket" class="ticket-icon">
+                <span>23</span>
+            </div>
         </div>
-        <div class="slot-game">
-            <div>Slot Game</div>
-            <img src="{{ url_for('static', filename='images/slot_machine.png') }}" alt="Slot Machine" class="icon">
-        </div>
-        <a href="/collect_reward" class="button">Collect reward</a>
-    </div>
 
-    <div class="navbar">
-        <a href="/home">
-            <img src="{{ url_for('static', filename='images/home_icon.png') }}" alt="Home" class="icon">
-            Home
-        </a>
-        <a href="/frens">
-            <img src="{{ url_for('static', filename='images/frens_icon.png') }}" alt="Frens" class="icon">
-            Frens
-        </a>
-        <a href="/wallet">
-            <img src="{{ url_for('static', filename='images/wallet_icon.png') }}" alt="Wallet" class="icon">
-            Wallet
-        </a>
+        <div class="slot-game">
+            <div class="slot-header">
+                <span>SLOT GAME</span>
+                <button class="play-button">PLAY</button>
+            </div>
+            <img src="{{ url_for('static', filename='slot-machine.png') }}" alt="Slot Machine" class="slot-machine">
+        </div>
+
+        <button class="collect-button">Collect reward</button>
+
+        <div class="navbar">
+            <div class="nav-item">
+                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home" class="nav-icon">
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <img src="{{ url_for('static', filename='frens-icon.png') }}" alt="Frens" class="nav-icon">
+                <span>Frens</span>
+            </div>
+            <div class="nav-item">
+                <img src="{{ url_for('static', filename='wallet-icon.png') }}" alt="Wallet" class="nav-icon">
+                <span>Wallet</span>
+            </div>
+        </div>
     </div>
 </body>
 </html>
