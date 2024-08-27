@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import telebot
-import threading
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import os
 
 app = Flask(__name__)
@@ -19,16 +19,10 @@ def collect_reward():
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    # Используем Markdown для форматирования ссылки
-    bot.reply_to(message, "Welcome to the game! [Visit the web page to play](https://instagram-bot22-1d84ba019e98.herokuapp.com).")
-
-def run_bot():
-    bot.polling(non_stop=True)
+    keyboard = InlineKeyboardMarkup()
+    url_button = InlineKeyboardButton(text="Open Web App", url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
+    keyboard.add(url_button)
+    bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
 
 if __name__ == "__main__":
-    # Запускаем бота в отдельном потоке
-    bot_thread = threading.Thread(target=run_bot)
-    bot_thread.start()
-
-    # Запускаем Flask-приложение
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
