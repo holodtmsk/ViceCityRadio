@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import telebot
+import threading
 import os
 
 app = Flask(__name__)
@@ -20,8 +21,13 @@ def collect_reward():
 def send_welcome(message):
     bot.reply_to(message, "Welcome to the game! Visit the web page to play.")
 
+def run_bot():
+    bot.polling(non_stop=True)
+
 if __name__ == "__main__":
+    # Запускаем бота в отдельном потоке
+    bot_thread = threading.Thread(target=run_bot)
+    bot_thread.start()
+
+    # Запускаем Flask-приложение
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
-
-
