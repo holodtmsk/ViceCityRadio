@@ -4,7 +4,7 @@ import threading
 import os
 
 app = Flask(__name__)
-bot = telebot.TeleBot("ВАШ_ТОКЕН_ТЕЛЕГРАМ_БОТА")
+bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
 
 # Удаляем вебхук, если он установлен
 bot.remove_webhook()
