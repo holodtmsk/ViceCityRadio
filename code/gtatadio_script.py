@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request
 import telebot
+import os
 
 app = Flask(__name__)
 bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
+
+# Удаляем вебхук, если он установлен
+bot.remove_webhook()
 
 @app.route('/')
 def index():
@@ -18,4 +22,5 @@ def send_welcome(message):
 
 if __name__ == "__main__":
     bot.polling(none_stop=True)
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
