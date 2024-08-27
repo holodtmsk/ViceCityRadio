@@ -1,1 +1,1 @@
-web: gunicorn gtatadio_script:app
+web: python gtatadio_script.py
