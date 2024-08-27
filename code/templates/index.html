@@ -1,61 +1,40 @@
-from flask import Flask, request
-import telebot
-
-app = Flask(__name__)
-bot = telebot.TeleBot("YOUR_BOT_API_KEY")
-
-# Serve the main page
-@app.route('/')
-def index():
-    return '''
-    <html>
-    <head>
-        <style>
-            body {
-                text-align: center;
-                background-color: black;
-                color: white;
-                font-family: Arial, sans-serif;
-            }
-            .button {
-                background-color: green;
-                color: white;
-                padding: 10px 20px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 10px;
-                cursor: pointer;
-                border-radius: 5px;
-            }
-            .slot-game {
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <div style="margin-top: 50px;">
-            <div style="font-size: 24px; font-weight: bold;">NN</div>
-            <div style="margin-top: 10px;">name_name</div>
-            <div style="font-size: 36px; margin-top: 20px;">$1,100,000,000</div>
-            <div style="margin-top: 20px;">
-                <img src="admit_one_ticket_image_url" alt="Tickets" width="50">
-                23
-            </div>
-            <div class="slot-game">
-                <div>Slot Game</div>
-                <img src="slot_machine_image_url" alt="Slot Machine" width="100">
-            </div>
-            <a href="/collect_reward" class="button">Collect reward</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="profile-icon">NN</div>
+        <div class="name">name_name</div>
+        <div class="balance">$1,100,000,000</div>
+        <div class="tickets">
+            <img src="{{ url_for('static', filename='images/ticket.png') }}" alt="Tickets">
+            23
         </div>
-    </body>
-    </html>
-    '''
+        <div class="slot-game">
+            <div>Slot Game</div>
+            <img src="{{ url_for('static', filename='images/slot_machine.png') }}" alt="Slot Machine">
+        </div>
+        <a href="/collect_reward" class="button">Collect reward</a>
+    </div>
 
-@app.route('/collect_reward')
-def collect_reward():
-    return "Reward collected!"
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    <div class="navbar">
+        <a href="#">
+            <img src="{{ url_for('static', filename='images/home_icon.png') }}" alt="Home">
+            Home
+        </a>
+        <a href="#">
+            <img src="{{ url_for('static', filename='images/frens_icon.png') }}" alt="Frens">
+            Frens
+        </a>
+        <a href="#">
+            <img src="{{ url_for('static', filename='images/wallet_icon.png') }}" alt="Wallet">
+            Wallet
+        </a>
+    </div>
+</body>
+</html>
