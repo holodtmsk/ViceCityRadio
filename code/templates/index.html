@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Interface</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -24,6 +25,11 @@
         </div>
 
         <button class="collect-button">Collect reward</button>
+
+        <!-- Кнопка для запуска мини-приложения -->
+        <div class="open-app-button">
+            <button onclick="launchApp()">Open Web App</button>
+        </div>
     </div>
 
     <div class="navigation-bar">
@@ -40,5 +46,11 @@
             <span>Wallet</span>
         </div>
     </div>
+
+    <script>
+        function launchApp() {
+            window.Telegram.WebApp.open();
+        }
+    </script>
 </body>
 </html>
