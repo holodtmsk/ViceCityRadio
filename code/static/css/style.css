@@ -46,11 +46,6 @@ body {
     margin-top: 5px;
 }
 
-.ticket-icon {
-    font-size: 24px;
-    vertical-align: middle;
-}
-
 .slot-game {
     display: flex;
     align-items: center;
@@ -70,8 +65,7 @@ body {
 }
 
 .slot-machine {
-    width: 80px;
-    height: auto;
+    font-size: 48px;
 }
 
 .play-button {
@@ -120,7 +114,6 @@ body {
 }
 
 .nav-icon {
-    width: 24px;
-    height: 24px;
+    font-size: 24px;
     margin-bottom: 5px;
 }
