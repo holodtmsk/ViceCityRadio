@@ -1,7 +1,7 @@
 body {
     background-color: black;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
@@ -94,6 +94,25 @@ body {
 
 .collect-button:hover {
     background-color: darkgreen;
+}
+
+/* Новый стиль для кнопки запуска мини-приложения */
+.open-app-button {
+    margin-top: 20px;
+}
+
+.open-app-button button {
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.open-app-button button:hover {
+    background-color: #4682b4;
 }
 
 .navigation-bar {
