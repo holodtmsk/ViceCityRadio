@@ -21,6 +21,7 @@ def send_welcome(message):
     bot.reply_to(message, "Welcome to the game! Visit the web page to play.")
 
 if __name__ == "__main__":
-    bot.polling(none_stop=True)
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
+
+
