@@ -12,27 +12,27 @@
         <div class="name">name_name</div>
         <div class="balance">$1,100,000,000</div>
         <div class="tickets">
-            <img src="{{ url_for('static', filename='images/ticket.png') }}" alt="Tickets">
+            <span role="img" aria-label="Tickets">🎟️</span>
             23
         </div>
         <div class="slot-game">
             <div>Slot Game</div>
-            <img src="{{ url_for('static', filename='images/slot_machine.png') }}" alt="Slot Machine">
+            <span role="img" aria-label="Slot Machine">🎰</span>
         </div>
         <a href="/collect_reward" class="button">Collect reward</a>
     </div>
 
     <div class="navbar">
-        <a href="#">
-            <img src="{{ url_for('static', filename='images/home_icon.png') }}" alt="Home">
+        <a href="/home">
+            <span role="img" aria-label="Home">🏠</span>
             Home
         </a>
-        <a href="#">
-            <img src="{{ url_for('static', filename='images/frens_icon.png') }}" alt="Frens">
+        <a href="/frens">
+            <span role="img" aria-label="Frens">👥</span>
             Frens
         </a>
-        <a href="#">
-            <img src="{{ url_for('static', filename='images/wallet_icon.png') }}" alt="Wallet">
+        <a href="/wallet">
+            <span role="img" aria-label="Wallet">💼</span>
             Wallet
         </a>
     </div>
