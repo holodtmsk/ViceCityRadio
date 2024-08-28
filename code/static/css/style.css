@@ -4,7 +4,7 @@ body {
     color: white;
     font-family: 'IBM Plex Mono', monospace;
     text-align: center;
-    margin: 0;
+    margin: 80px;
     padding: 0;
     font-weight: 700;
 }
@@ -23,12 +23,12 @@ body {
 .avatar {
     background-color: #1e90ff;
     border-radius: 50%;
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 45px;
     color: white;
     margin: 0 auto;
 }
@@ -40,12 +40,12 @@ body {
 
 .balance {
     font-size: 32px;
-    margin-top: 5px;
+    margin-top: 35px;
 }
 
 .tickets {
     font-size: 20px;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 /* Стили для блока с игрой */
@@ -57,7 +57,8 @@ body {
     border-radius: 10px;
     padding: 10px 20px;
     margin-bottom: 20px;
-    width: 290px; /* Немного увеличена ширина */
+    margin-top: 70px;
+    width: 350px; /* Немного увеличена ширина */
 }
 
 .slot-game-text {
@@ -67,8 +68,8 @@ body {
 }
 
 .icon {
-    width: 80px; /* Размер иконки */
-    height: 87px;
+    width: 130px; /* Размер иконки */
+    height: 145px;
     margin-right: 10px; /* Расстояние между иконкой и кнопкой */
 }
 
@@ -92,10 +93,10 @@ body {
     color: black;
     border: none;
     border-radius: 10px;
-    padding: 12px 30px;
+    padding: 16px 30px;
     cursor: pointer;
     font-size: 18px;
-    width: 330px;
+    width: 390px;
 }
 
 .collect-button:hover {
