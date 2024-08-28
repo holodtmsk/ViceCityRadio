@@ -57,18 +57,18 @@ body {
     border-radius: 10px;
     padding: 10px 20px;
     margin-bottom: 20px;
-    width: 300px; /* Немного увеличена ширина */
+    width: 290px; /* Немного увеличена ширина */
 }
 
 .slot-game-text {
-    font-size: 20px;
+    font-size: 17px;
     color: red;
     margin-right: 10px; /* Расстояние между текстом и иконкой */
 }
 
 .icon {
-    width: 50px; /* Размер иконки */
-    height: 50px;
+    width: 130px; /* Размер иконки */
+    height: 145px;
     margin-right: 10px; /* Расстояние между иконкой и кнопкой */
 }
 
@@ -76,10 +76,10 @@ body {
     background-color: #333;
     color: white;
     border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
+    border-radius: 15px;
+    padding: 10px 8px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .play-button:hover {
@@ -91,11 +91,11 @@ body {
     background-color: #A4D05D;
     color: black;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 12px 30px;
     cursor: pointer;
     font-size: 18px;
-    width: 60%;
+    width: 330px;
 }
 
 .collect-button:hover {
