@@ -117,7 +117,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: white;
+    color: #959595;
 }
 
 .nav-icon {
