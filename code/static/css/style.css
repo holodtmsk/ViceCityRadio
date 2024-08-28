@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 /* Общие стили */
 html, body {
     background-color: black;
@@ -63,18 +64,15 @@ html, body {
     padding: 10px 20px;
     margin-top: 20px;
     width: 350px; /* Немного увеличена ширина */
+    font-family: 'Bangers', cursive; /* Применение шрифта Bangers */
 }
 
 .slot-game-text {
-    font-size: 17px;
+    font-size: 24px; /* Размер шрифта увеличен для лучшего восприятия */
     color: red;
     margin-right: 10px; /* Расстояние между текстом и иконкой */
-}
-
-.icon {
-    width: 130px; /* Размер иконки */
-    height: 145px;
-    margin-right: 10px; /* Расстояние между иконкой и кнопкой */
+    font-family: 'Bangers', cursive; /* Применение шрифта Bangers */
+    font-weight: 100;
 }
 
 .play-button {
@@ -84,7 +82,8 @@ html, body {
     border-radius: 15px;
     padding: 10px 8px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 18px; /* Увеличен размер шрифта */
+    font-family: 'Bangers', cursive; /* Применение шрифта Bangers */
 }
 
 .play-button:hover {
