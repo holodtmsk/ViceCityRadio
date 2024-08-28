@@ -1,3 +1,4 @@
+/* Общие стили */
 body {
     background-color: black;
     color: white;
@@ -5,7 +6,7 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-    font-weight: 700; /* Жирный стиль */
+    font-weight: 700;
 }
 
 .container {
@@ -47,6 +48,7 @@ body {
     margin-top: 5px;
 }
 
+/* Стили для блока с игрой */
 .slot-game {
     display: flex;
     align-items: center;
@@ -66,7 +68,7 @@ body {
 }
 
 .icon {
-    width: 48px;
+    width: 48px; /* Задайте нужный размер */
     height: 48px;
 }
 
@@ -84,6 +86,7 @@ body {
     background-color: #555;
 }
 
+/* Кнопка получения награды */
 .collect-button {
     background-color: #A4D05D;
     color: black;
@@ -99,6 +102,7 @@ body {
     background-color: #8CBB4C;
 }
 
+/* Навигационная панель */
 .navigation-bar {
     display: flex;
     justify-content: space-around;
@@ -117,7 +121,7 @@ body {
 }
 
 .nav-icon {
-    width: 24px;
+    width: 24px; /* Задайте нужный размер */
     height: 24px;
     margin-bottom: 5px;
 }
