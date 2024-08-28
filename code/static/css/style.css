@@ -4,7 +4,7 @@ body {
     color: white;
     font-family: 'IBM Plex Mono', monospace;
     text-align: center;
-    margin: 80px;
+    margin: 0; /* Убрано значение маржина */
     padding: 0;
     font-weight: 700;
 }
@@ -57,7 +57,7 @@ body {
     border-radius: 10px;
     padding: 10px 20px;
     margin-bottom: 20px;
-    margin-top: 70px;
+    margin-top: 110px;
     width: 350px; /* Немного увеличена ширина */
 }
 
@@ -94,6 +94,8 @@ body {
     border: none;
     border-radius: 10px;
     padding: 16px 30px;
+    position: fixed;
+    bottom: 100px;
     cursor: pointer;
     font-size: 18px;
     width: 390px;
@@ -111,7 +113,10 @@ body {
     padding: 10px 0;
     position: fixed;
     bottom: 10px;
-    width: 100%;
+    left: 0; /* Добавлено для выравнивания панели */
+    right: 0; /* Добавлено для выравнивания панели */
+    width: 100%; /* Обеспечивает панель полной ширины экрана */
+    margin: 0 auto; /* Центрирует панель */
 }
 
 .nav-item {
