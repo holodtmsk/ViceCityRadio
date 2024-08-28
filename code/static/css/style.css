@@ -68,8 +68,8 @@ body {
 }
 
 .icon {
-    width: 48px; /* Задайте нужный размер */
-    height: 48px;
+    width: 100px; /* Задайте нужный размер */
+    height: 100px;
 }
 
 .play-button {
