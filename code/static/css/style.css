@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&display=swap');
-
 body {
     background-color: black;
     color: white;
@@ -7,9 +5,8 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-    font-weight: 700; /* Жирный стиль для IBM Plex Mono */
+    font-weight: 700; /* Жирный стиль */
 }
-
 
 .container {
     display: flex;
@@ -68,32 +65,38 @@ body {
     margin-bottom: 10px;
 }
 
-.slot-machine {
-    font-size: 48px;
+.icon {
+    width: 48px;
+    height: 48px;
 }
 
 .play-button {
     background-color: #333;
     color: white;
     border: none;
-    border-radius: 30px;
-    padding: 10px 10px;
+    border-radius: 5px;
+    padding: 10px 20px;
     margin-top: 10px;
     cursor: pointer;
 }
 
+.play-button:hover {
+    background-color: #555;
+}
+
 .collect-button {
-    background-color: #C3FF69; /* Цвет, как на примере */
+    background-color: #A4D05D;
     color: black;
     border: none;
-    border-radius: 10px;
-    padding: 14px 0; /* Уменьшенный padding по высоте */
+    border-radius: 5px;
+    padding: 12px 30px;
     cursor: pointer;
     font-size: 18px;
-    width: 340px; /* Сделаем ширину на 20% меньше ширины белого блока */
-    max-width: 100%;
-    margin: 20px 0;
-    display: inline-block;
+    width: 60%;
+}
+
+.collect-button:hover {
+    background-color: #8CBB4C;
 }
 
 .navigation-bar {
@@ -114,6 +117,7 @@ body {
 }
 
 .nav-icon {
-    font-size: 24px;
+    width: 24px;
+    height: 24px;
     margin-bottom: 5px;
 }
