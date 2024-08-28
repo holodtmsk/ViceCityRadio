@@ -57,8 +57,7 @@ body {
     background-color: white;
     border-radius: 10px;
     padding: 10px 20px;
-    margin-bottom: 20px;
-    margin-top: 70px;
+    margin-top: 20px;
     width: 350px; /* Немного увеличена ширина */
 }
 
@@ -96,7 +95,7 @@ body {
     border-radius: 10px;
     padding: 16px 30px;
     position: fixed;
-    bottom: 100px;
+    bottom: 80px;
     cursor: pointer;
     font-size: 18px;
     width: 390px;
@@ -128,7 +127,7 @@ body {
 }
 
 .nav-icon {
-    width: 24px;
-    height: 24px;
+    width: 17px;
+    height: 20px;
     margin-bottom: 5px;
 }
