@@ -67,8 +67,8 @@ body {
 }
 
 .icon {
-    width: 130px; /* Размер иконки */
-    height: 180px;
+    width: 80px; /* Размер иконки */
+    height: 87px;
     margin-right: 10px; /* Расстояние между иконкой и кнопкой */
 }
 
