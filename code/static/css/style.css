@@ -96,25 +96,6 @@ body {
     background-color: darkgreen;
 }
 
-/* Новый стиль для кнопки запуска мини-приложения */
-.open-app-button {
-    margin-top: 20px;
-}
-
-.open-app-button button {
-    background-color: #1e90ff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 20px;
-}
-
-.open-app-button button:hover {
-    background-color: #4682b4;
-}
-
 .navigation-bar {
     display: flex;
     justify-content: space-around;
