@@ -6,7 +6,6 @@
     <title>Game Interface</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <div class="container">
@@ -21,7 +20,7 @@
         
         <div class="slot-game">
             <span class="slot-game-text">SLOT GAME</span>
-            <span class="slot-machine">🎰</span>
+            <img src="{{ url_for('static', filename='images/slot_machine.png') }}" alt="Slot Machine" class="icon">
             <button class="play-button">PLAY</button>
         </div>
 
@@ -30,15 +29,15 @@
 
     <div class="navigation-bar">
         <div class="nav-item">
-            <span class="nav-icon">🏠</span>
+            <img src="{{ url_for('static', filename='images/home_icon.png') }}" alt="Home" class="nav-icon">
             <span>Home</span>
         </div>
         <div class="nav-item">
-            <span class="nav-icon">👥</span>
+            <img src="{{ url_for('static', filename='images/frens_icon.png') }}" alt="Frens" class="nav-icon">
             <span>Frens</span>
         </div>
         <div class="nav-item">
-            <span class="nav-icon">💼</span>
+            <img src="{{ url_for('static', filename='images/wallet_icon.png') }}" alt="Wallet" class="nav-icon">
             <span>Wallet</span>
         </div>
     </div>
