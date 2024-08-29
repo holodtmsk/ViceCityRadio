@@ -153,13 +153,19 @@ html, body {
     font-size: 18px;
     width: 390px;
     position: fixed;
-    bottom: 160px; /* Немного выше кнопки "Collect reward" */
+    bottom: 160px; /* Положение кнопки */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.start-button.disabled {
+.start-button.farming {
     background-color: grey;
     color: #777;
     cursor: not-allowed;
+}
+
+.start-button.collect {
+    background-color: #A4D05D;
+    color: black;
 }
 
 .start-button .countdown {
@@ -167,3 +173,4 @@ html, body {
     font-size: 12px;
     margin-top: 5px;
 }
+
