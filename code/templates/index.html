@@ -63,33 +63,33 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const startButton = document.getElementById('start-farming-button');
-        const collectButton = document.querySelector('.collect-button');
+        const farmingButton = document.getElementById('farming-button');
 
         let farmingInProgress = false;
 
-        startButton.addEventListener('click', function () {
+        farmingButton.addEventListener('click', function () {
             if (farmingInProgress) return;
 
             farmingInProgress = true;
-            startButton.classList.add('disabled');
-            startButton.innerHTML = '🎟 Farming goods... <span class="countdown">60</span>';
+            farmingButton.classList.add('farming');
+            farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">60</span>';
 
             let timeLeft = 60;
             const countdownInterval = setInterval(() => {
                 timeLeft--;
-                startButton.querySelector('.countdown').textContent = timeLeft;
+                farmingButton.querySelector('.countdown').textContent = timeLeft;
 
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
                     farmingInProgress = false;
-                    startButton.classList.remove('disabled');
-                    startButton.textContent = 'Start Farming';
-                    collectButton.classList.add('play-button');
+                    farmingButton.classList.remove('farming');
+                    farmingButton.classList.add('collect');
+                    farmingButton.textContent = 'Collect reward';
                 }
             }, 1000);
         });
     });
 </script>
+
 </body>
 </html>
