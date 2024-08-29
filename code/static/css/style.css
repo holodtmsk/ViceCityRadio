@@ -142,3 +142,28 @@ html, body {
     margin-bottom: 10px;
 }
 
+.start-button {
+    background-color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    color: black;
+    border: none;
+    border-radius: 10px;
+    padding: 16px 30px;
+    cursor: pointer;
+    font-size: 18px;
+    width: 390px;
+    position: fixed;
+    bottom: 160px; /* Немного выше кнопки "Collect reward" */
+}
+
+.start-button.disabled {
+    background-color: grey;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.start-button .countdown {
+    display: block;
+    font-size: 12px;
+    margin-top: 5px;
+}
