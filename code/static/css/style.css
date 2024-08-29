@@ -99,6 +99,7 @@ html, body {
 /* Кнопка получения награды */
 .collect-button {
     background-color: #A4D05D;
+    font-family: 'IBM Plex Mono', monospace;
     color: black;
     border: none;
     border-radius: 10px;
