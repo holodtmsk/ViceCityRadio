@@ -173,3 +173,22 @@ html, body {
     font-size: 12px;
     margin-top: 5px;
 }
+
+#confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Поверх всех элементов */
+}
+
+#confetti-gif {
+    width: 100%;
+    height: auto;
+    max-width: 600px; /* Ограничиваем максимальный размер */
+    pointer-events: none; /* Чтобы гифка не блокировала взаимодействие с другими элементами */
+}
