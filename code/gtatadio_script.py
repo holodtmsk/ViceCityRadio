@@ -1,34 +1,38 @@
-from flask import Flask, render_template, request, session, redirect
-import json
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
 
-# A temporary dictionary to hold user data (use a database in production)
-user_data = {}
+# Пример базы данных пользователей (можно заменить на SQLite)
+user_data = {
+    "telegram_username": {
+        "balance": 1000000000,
+        "spins": 23,
+        "history": []
+    }
+}
 
-@app.route('/')
-def index():
-    username = session.get('username', 'guest')
-    if username not in user_data:
-        user_data[username] = {'balance': 0, 'spins': 0}
-    return render_template('index.html', balance=user_data[username]['balance'], spins=user_data[username]['spins'])
+@app.route('/collect_reward', methods=['POST'])
+def collect_reward():
+    data = request.json
+    username = data['username']
+    spins_earned = data['spinsEarned']
+    money_earned = data['moneyEarned']
 
-@app.route('/start_farming')
-def start_farming():
-    # This would normally trigger farming logic
-    username = session.get('username', 'guest')
     if username in user_data:
-        # Simulate earning spins and money
-        user_data[username]['spins'] += 10
-        user_data[username]['balance'] += 1000
-    return redirect('/')
+        user_data[username]['balance'] += money_earned
+        user_data[username]['spins'] += spins_earned
+        # Сохраняем историю
+        user_data[username]['history'].append({
+            'spins': spins_earned,
+            'money': money_earned
+        })
 
-@app.route('/login', methods=['POST'])
-def login():
-    session['username'] = request.form['username']
-    return redirect('/')
+        return jsonify({
+            'newBalance': user_data[username]['balance'],
+            'newSpins': user_data[username]['spins']
+        })
+
+    return jsonify({'error': 'User not found'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
-
