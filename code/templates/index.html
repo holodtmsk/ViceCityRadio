@@ -30,6 +30,11 @@
             <button id="farming-button" class="start-button">Start Farming</button>
         </div>
 
+        <!-- Добавляем блок для гифки -->
+        <div id="confetti-container">
+            <img src="{{ url_for('static', filename='images/collectreward.gif') }}" alt="Collect Reward" id="confetti-gif">
+        </div>
+
         <div class="navigation-bar">
             <div class="nav-item">
                 <img src="{{ url_for('static', filename='images/home_icon.png') }}" alt="Home" class="nav-icon">
@@ -48,8 +53,13 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const farmingButton = document.getElementById('farming-button');
+                const confettiGif = document.getElementById('confetti-gif');
+                const confettiContainer = document.getElementById('confetti-container');
 
                 let farmingInProgress = false;
+
+                // Скрываем гифку при загрузке страницы
+                confettiContainer.style.display = 'none';
 
                 farmingButton.addEventListener('click', function () {
                     if (farmingInProgress || farmingButton.classList.contains('collect')) return;
@@ -92,6 +102,12 @@
                         // Обновляем интерфейс с новым балансом
                         document.querySelector('.balance').textContent = `$${data.newBalance}`;
                         document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
+
+                        // Показать гифку конфетти на несколько секунд
+                        confettiContainer.style.display = 'block';
+                        setTimeout(() => {
+                            confettiContainer.style.display = 'none';
+                        }, 3000);  // Гифка будет видна 3 секунды
                     });
 
                     // Сброс состояния кнопки на "Start Farming" после получения награды
