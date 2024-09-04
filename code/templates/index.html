@@ -86,15 +86,22 @@
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            username: 'telegram_username',  // Вставьте имя пользователя из Telegram
+                            username: 'telegram_username'  // Вставьте имя пользователя из Telegram
                         }),
-                    }).then(response => {
-                        return response.json();
-                    }).then(data => {
-                        // Обновляем интерфейс с новым балансом
-                        document.querySelector('.balance').textContent = `$${data.newBalance}`;
-                        document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
-                    });
+                    }).then(response => response.json())
+                      .then(data => {
+                          console.log(data);  // Логируем данные, чтобы убедиться, что они корректны
+                          
+                          // Проверяем, есть ли данные и они корректны
+                          if (data.newBalance && data.newSpins) {
+                              // Обновляем интерфейс с новым балансом
+                              document.querySelector('.balance').textContent = `$${data.newBalance}`;
+                              document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
+                          } else {
+                              console.error('Данные о балансе или спинах не получены.');
+                          }
+                      })
+                      .catch(error => console.error('Ошибка при получении данных с сервера:', error));
 
                     // Сброс состояния кнопки на "Start Farming" после получения награды
                     farmingButton.classList.remove('collect');
