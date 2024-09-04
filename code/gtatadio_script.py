@@ -64,6 +64,7 @@ def index():
         add_user(username)
         user = get_user(username)
 
+    # Передаем баланс и спины в шаблон для рендеринга
     return render_template('index.html', balance=user[1], spins=user[2])
 
 @app.route('/collect_reward', methods=['POST'])
@@ -102,3 +103,4 @@ if __name__ == "__main__":
     # Инициализируем базу данных при запуске
     init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
