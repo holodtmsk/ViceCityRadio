@@ -77,7 +77,12 @@ def index():
 @app.route('/collect_reward', methods=['POST'])
 def collect_reward():
     data = request.json
-    username = data['username']
+    username = data.get('username')
+
+    # Проверка наличия имени пользователя
+    if not username:
+        return jsonify({'error': 'Username is missing'}), 400
+
     spins_earned = 3  # Количество спинов, которые зарабатывает пользователь
     money_earned = 1000  # Сумма денег, которую зарабатывает пользователь
 
@@ -110,3 +115,4 @@ if __name__ == "__main__":
     # Инициализируем базу данных при запуске
     init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
