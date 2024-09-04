@@ -1,22 +1,58 @@
 from flask import Flask, render_template, request, jsonify
 import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import sqlite3
 import os
 
 app = Flask(__name__)
 bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
 
-# Пример базы данных пользователей (в памяти, можно заменить на SQLite)
-user_data = {
-    "telegram_username": {
-        "balance": 1000000000,
-        "spins": 23,
-        "history": []
-    }
-}
-
 # Удаляем вебхук, если он установлен
 bot.remove_webhook()
+
+# Инициализация базы данных
+def init_db():
+    conn = sqlite3.connect('user_data.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            balance INTEGER NOT NULL,
+            spins INTEGER NOT NULL,
+            history TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# Функция для добавления нового пользователя
+def add_user(username):
+    conn = sqlite3.connect('user_data.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO users (username, balance, spins, history)
+        VALUES (?, ?, ?, ?)
+    ''', (username, 1000000000, 23, ''))
+    conn.commit()
+    conn.close()
+
+# Функция для получения данных пользователя
+def get_user(username):
+    conn = sqlite3.connect('user_data.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+# Функция для обновления данных пользователя
+def update_user(username, new_balance, new_spins, history):
+    conn = sqlite3.connect('user_data.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE users SET balance = ?, spins = ?, history = ? WHERE username = ?
+    ''', (new_balance, new_spins, history, username))
+    conn.commit()
+    conn.close()
 
 @app.route('/')
 def index():
@@ -29,26 +65,39 @@ def collect_reward():
     spins_earned = data['spinsEarned']
     money_earned = data['moneyEarned']
 
-    # Обновляем данные пользователя
-    if username in user_data:
-        user_data[username]['balance'] += money_earned
-        user_data[username]['spins'] += spins_earned
-        user_data[username]['history'].append({
-            'spins': spins_earned,
-            'money': money_earned
-        })
+    # Получаем данные пользователя
+    user = get_user(username)
+    
+    if user:
+        balance = user[1] + money_earned
+        spins = user[2] + spins_earned
+        history = user[3] + f"Earned {money_earned} and {spins_earned} spins. "
+
+        # Обновляем данные пользователя
+        update_user(username, balance, spins, history)
+
         return jsonify({
-            'newBalance': user_data[username]['balance'],
-            'newSpins': user_data[username]['spins']
+            'newBalance': balance,
+            'newSpins': spins
         })
-    return jsonify({'error': 'User not found'}), 404
+    else:
+        # Если пользователя нет, создаем его
+        add_user(username)
+        return jsonify({
+            'newBalance': 1000000000 + money_earned,
+            'newSpins': 23 + spins_earned
+        })
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    keyboard = InlineKeyboardMarkup()
-    url_button = InlineKeyboardButton(text="Open Web App", url="https://your-app-url.com")
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    url_button = telebot.types.InlineKeyboardButton(text="Open Web App", url="https://your-app-url.com")
     keyboard.add(url_button)
     bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
 
 if __name__ == "__main__":
+    # Инициализируем базу данных при запуске
+    init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
+
