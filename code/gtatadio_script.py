@@ -31,7 +31,7 @@ def add_user(username):
     cursor.execute('''
         INSERT INTO users (username, balance, spins, history)
         VALUES (?, ?, ?, ?)
-    ''', (username, 1000000000, 23, ''))
+    ''', (username, 0, 0, ''))
     conn.commit()
     conn.close()
 
@@ -56,14 +56,22 @@ def update_user(username, new_balance, new_spins, history):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Замените "telegram_username" на реальное имя пользователя из Telegram
+    username = "telegram_username"
+    
+    user = get_user(username)
+    if not user:
+        add_user(username)
+        user = get_user(username)
+
+    return render_template('index.html', balance=user[1], spins=user[2])
 
 @app.route('/collect_reward', methods=['POST'])
 def collect_reward():
     data = request.json
     username = data['username']
-    spins_earned = data['spinsEarned']
-    money_earned = data['moneyEarned']
+    spins_earned = 3  # Количество спинов, которые зарабатывает пользователь
+    money_earned = 1000  # Сумма денег, которую зарабатывает пользователь
 
     # Получаем данные пользователя
     user = get_user(username)
@@ -81,12 +89,7 @@ def collect_reward():
             'newSpins': spins
         })
     else:
-        # Если пользователя нет, создаем его
-        add_user(username)
-        return jsonify({
-            'newBalance': 1000000000 + money_earned,
-            'newSpins': 23 + spins_earned
-        })
+        return jsonify({'error': 'User not found'}), 404
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -99,5 +102,3 @@ if __name__ == "__main__":
     # Инициализируем базу данных при запуске
     init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
-
