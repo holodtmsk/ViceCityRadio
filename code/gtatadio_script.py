@@ -54,18 +54,25 @@ def update_user(username, new_balance, new_spins, history):
     conn.commit()
     conn.close()
 
+# Функция для получения инициалов (первые 2 буквы)
+def get_initials(username):
+    return username[:2].upper()
+
 @app.route('/')
 def index():
     # Замените "telegram_username" на реальное имя пользователя из Telegram
-    username = "telegram_username"
+    username = "kholodvlad"  # Пример имени, вместо этого используйте реальное имя пользователя из Telegram
     
     user = get_user(username)
     if not user:
         add_user(username)
         user = get_user(username)
 
-    # Передаем баланс и спины в шаблон для рендеринга
-    return render_template('index.html', balance=user[1], spins=user[2])
+    # Получаем инициалы
+    initials = get_initials(username)
+
+    # Передаем имя пользователя, баланс, спины и инициалы в шаблон для рендеринга
+    return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
 
 @app.route('/collect_reward', methods=['POST'])
 def collect_reward():
@@ -103,4 +110,3 @@ if __name__ == "__main__":
     # Инициализируем базу данных при запуске
     init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
