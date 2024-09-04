@@ -11,8 +11,10 @@
 <body>
     <div class="container">
         <div class="profile">
-            <div class="avatar">NN</div>
-            <div class="name">name_name</div>
+            <!-- Отображаем инициалы пользователя на аватаре -->
+            <div class="avatar">{{ initials }}</div>
+            <!-- Отображаем имя пользователя -->
+            <div class="name">{{ username }}</div>
             <!-- Вставляем баланс и количество спинов, переданные сервером -->
             <div class="balance">${{ balance }}</div>
             <div class="tickets">
