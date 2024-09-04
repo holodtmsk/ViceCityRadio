@@ -69,6 +69,23 @@
 
         let farmingInProgress = false;
 
+        // Загрузим текущий баланс и количество спинов
+        fetch('/get_user_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: 'telegram_username'  // Вставьте имя пользователя из Telegram
+            }),
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            // Устанавливаем баланс и количество спинов в интерфейс
+            document.querySelector('.balance').textContent = `$${data.balance}`;
+            document.querySelector('.tickets').textContent = `🎟️ ${data.spins}`;
+        });
+
         farmingButton.addEventListener('click', function () {
             if (farmingInProgress || farmingButton.classList.contains('collect')) return;
 
@@ -103,8 +120,6 @@
                 },
                 body: JSON.stringify({
                     username: 'telegram_username',  // Вставьте имя пользователя из Telegram
-                    spinsEarned: 10,  // Пример количества заработанных спинов
-                    moneyEarned: 1000  // Пример заработанных денег
                 }),
             }).then(response => {
                 return response.json();
@@ -120,6 +135,7 @@
         });
     });
 </script>
+
 
 
     </div>
