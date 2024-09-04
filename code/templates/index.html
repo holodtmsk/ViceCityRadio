@@ -13,9 +13,10 @@
         <div class="profile">
             <div class="avatar">NN</div>
             <div class="name">name_name</div>
-            <div class="balance">$0</div>
+            <!-- Вставляем баланс и количество спинов, переданные сервером -->
+            <div class="balance">${{ balance }}</div>
             <div class="tickets">
-                🎟️ 0
+                🎟️ {{ spins }}
             </div>
         </div>
         
@@ -24,7 +25,7 @@
             <img src="{{ url_for('static', filename='images/slot_machine.png') }}" alt="Slot Machine" class="icon">
             <button class="play-button">PLAY</button>
         </div>
-        
+
         <div class="container">
             <button id="farming-button" class="start-button">Start Farming</button>
         </div>
@@ -45,99 +46,60 @@
         </div>
 
         <script>
-            // Блокируем зумирование страницы
-            document.addEventListener('touchmove', function(event) {
-                if (event.scale !== 1) {
-                    event.preventDefault();
-                }
-            }, { passive: false });
+            document.addEventListener('DOMContentLoaded', function () {
+                const farmingButton = document.getElementById('farming-button');
 
-            // Отключаем двойное нажатие для зумирования
-            var lastTouchEnd = 0;
-            document.addEventListener('touchend', function(event) {
-                var now = new Date().getTime();
-                if (now - lastTouchEnd <= 300) {
-                    event.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, false);
-        </script>
+                let farmingInProgress = false;
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const farmingButton = document.getElementById('farming-button');
+                farmingButton.addEventListener('click', function () {
+                    if (farmingInProgress || farmingButton.classList.contains('collect')) return;
 
-        let farmingInProgress = false;
+                    farmingInProgress = true;
+                    farmingButton.classList.add('farming');
+                    farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">5</span>';
 
-        // Загрузим текущий баланс и количество спинов
-        fetch('/get_user_data', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: 'telegram_username'  // Вставьте имя пользователя из Telegram
-            }),
-        }).then(response => {
-            return response.json();
-        }).then(data => {
-            // Устанавливаем баланс и количество спинов в интерфейс
-            document.querySelector('.balance').textContent = `$${data.balance}`;
-            document.querySelector('.tickets').textContent = `🎟️ ${data.spins}`;
-        });
+                    let timeLeft = 5;  // Время изменено на 5 секунд
+                    const countdownInterval = setInterval(() => {
+                        timeLeft--;
+                        farmingButton.querySelector('.countdown').textContent = timeLeft;
 
-        farmingButton.addEventListener('click', function () {
-            if (farmingInProgress || farmingButton.classList.contains('collect')) return;
+                        if (timeLeft <= 0) {
+                            clearInterval(countdownInterval);
+                            farmingInProgress = false;
+                            farmingButton.classList.remove('farming');
+                            farmingButton.classList.add('collect');
+                            farmingButton.textContent = 'Collect reward';
+                        }
+                    }, 1000);
+                });
 
-            farmingInProgress = true;
-            farmingButton.classList.add('farming');
-            farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">5</span>';
+                // Логика для сбора награды
+                farmingButton.addEventListener('click', function () {
+                    if (!farmingButton.classList.contains('collect')) return;
 
-            let timeLeft = 5;  // Время изменено на 5 секунд
-            const countdownInterval = setInterval(() => {
-                timeLeft--;
-                farmingButton.querySelector('.countdown').textContent = timeLeft;
+                    // Отправляем запрос на сервер для сохранения данных пользователя
+                    fetch('/collect_reward', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: 'telegram_username',  // Вставьте имя пользователя из Telegram
+                        }),
+                    }).then(response => {
+                        return response.json();
+                    }).then(data => {
+                        // Обновляем интерфейс с новым балансом
+                        document.querySelector('.balance').textContent = `$${data.newBalance}`;
+                        document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
+                    });
 
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    farmingInProgress = false;
-                    farmingButton.classList.remove('farming');
-                    farmingButton.classList.add('collect');
-                    farmingButton.textContent = 'Collect reward';
-                }
-            }, 1000);
-        });
-
-        // Логика для сбора награды
-        farmingButton.addEventListener('click', function () {
-            if (!farmingButton.classList.contains('collect')) return;
-
-            // Отправляем запрос на сервер для сохранения данных пользователя
-            fetch('/collect_reward', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: 'telegram_username',  // Вставьте имя пользователя из Telegram
-                }),
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-                // Обновляем интерфейс с новым балансом
-                document.querySelector('.balance').textContent = `$${data.newBalance}`;
-                document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
+                    // Сброс состояния кнопки на "Start Farming" после получения награды
+                    farmingButton.classList.remove('collect');
+                    farmingButton.textContent = 'Start Farming';
+                });
             });
-
-            // Сброс состояния кнопки на "Start Farming" после получения награды
-            farmingButton.classList.remove('collect');
-            farmingButton.textContent = 'Start Farming';
-        });
-    });
-</script>
-
-
-
+        </script>
     </div>
 </body>
 </html>
