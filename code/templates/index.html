@@ -74,9 +74,9 @@
 
                     farmingInProgress = true;
                     farmingButton.classList.add('farming');
-                    farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">60</span>';
+                    farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">5</span>';
 
-                    let timeLeft = 60;
+                    let timeLeft = 5;
                     const countdownInterval = setInterval(() => {
                         timeLeft--;
                         farmingButton.querySelector('.countdown').textContent = timeLeft;
