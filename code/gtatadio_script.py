@@ -109,10 +109,12 @@ def set_menu_button(chat_id):
 # Обработка команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    print(f"Received /start command from {message.chat.id}")
     keyboard = telebot.types.InlineKeyboardMarkup()
     url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
     keyboard.add(url_button)
     bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
+
 
 
 # Настройка вебхука
@@ -120,12 +122,14 @@ def send_welcome(message):
 def webhook():
     try:
         json_str = request.get_data().decode('UTF-8')
+        print(f"Webhook data received: {json_str}")
         update = telebot.types.Update.de_json(json_str)
         bot.process_new_updates([update])
         return '!', 200
     except Exception as e:
         print(f"Error processing webhook: {e}")
         return 'Error', 500
+
 
 if __name__ == "__main__":
     # Инициализируем базу данных при запуске
