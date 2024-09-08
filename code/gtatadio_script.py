@@ -109,11 +109,20 @@ def set_menu_button(chat_id):
 # Обработка команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    print(f"Received /start command from {message.chat.id}")
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
-    keyboard.add(url_button)
-    bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
+    try:
+        # Отладочное сообщение в консоль
+        print(f"Processing /start for {message.chat.id}")
+        
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
+        keyboard.add(url_button)
+        
+        # Отправляем сообщение с кнопкой
+        bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
+        print(f"Message sent to {message.chat.id}")
+    except Exception as e:
+        print(f"Error: {e}")
+
 
 
 
