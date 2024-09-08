@@ -14,7 +14,7 @@ bot.remove_webhook()
 # Обработка команды start
 def start(update: Update, context: CallbackContext):
     # URL на ваше Telegram Mini App
-    mini_app_url = 'https://t.me/your_bot?start=mini_app'
+    mini_app_url = 'https://t.me/ViceCityRadioBot?start=mini_app'
 
     # Формируем кнопку для открытия мини-приложения
     keyboard = [
