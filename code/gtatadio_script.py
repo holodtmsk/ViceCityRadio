@@ -102,9 +102,10 @@ def collect_reward():
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     keyboard = telebot.types.InlineKeyboardMarkup()
-    url_button = telebot.types.InlineKeyboardButton(text="Open Web App", url="https://t.me/ViceCityRadioBot?start=mini_app")
+    url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
     keyboard.add(url_button)
     bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
+
 
 # Настройка вебхука
 @app.route("/webhook", methods=['POST'])
