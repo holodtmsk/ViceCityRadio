@@ -59,18 +59,27 @@ def get_initials(username):
     return username[:2].upper()
 
 # Маршрут для отображения главной страницы
-@app.route('/')
+@app.route('/', methods=['POST'])
 def index():
-    username = "kholodvlad"  # Пример имени, вместо этого используйте реальное имя пользователя из Telegram
-    
+    # Получаем данные из запроса
+    data = request.json
+    username = data.get('username')  # Имя пользователя, переданное через запрос
+
+    if not username:
+        return jsonify({'error': 'Username is missing'}), 400
+
+    # Проверяем, есть ли пользователь в базе данных
     user = get_user(username)
     if not user:
-        add_user(username)
+        add_user(username)  # Если нет, создаем нового пользователя
         user = get_user(username)
 
+    # Получаем инициалы
     initials = get_initials(username)
 
+    # Возвращаем HTML-страницу с балансом, количеством спинов и именем пользователя
     return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
+
 
 # Маршрут для сбора награды
 @app.route('/collect_reward', methods=['POST'])
