@@ -109,15 +109,11 @@ def set_menu_button(chat_id):
 # Обработка команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    # Устанавливаем меню кнопку для запуска Mini App
-    set_menu_button(message.chat.id)
-    
-    # Создаем Inline-кнопку для открытия Web App
     keyboard = telebot.types.InlineKeyboardMarkup()
     url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
     keyboard.add(url_button)
-    
     bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
+
 
 # Настройка вебхука
 @app.route("/webhook", methods=['POST'])
