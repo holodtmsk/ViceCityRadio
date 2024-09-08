@@ -107,12 +107,13 @@ def send_welcome(message):
     bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
 
 # Настройка вебхука
-@app.route("/" + bot.token, methods=['POST'])
+@app.route("/webhook", methods=['POST'])
 def webhook():
     json_str = request.get_data().decode('UTF-8')
     update = telebot.types.Update.de_json(json_str)
     bot.process_new_updates([update])
     return '!', 200
+
 
 if __name__ == "__main__":
     # Инициализируем базу данных при запуске
@@ -120,6 +121,6 @@ if __name__ == "__main__":
 
     # Устанавливаем вебхук
     bot.remove_webhook()
-    bot.set_webhook(url="https://instagram-bot22.herokuapp.com/" + bot.token)
+    bot.set_webhook(url="https://instagram-bot22-1d84ba019e98.herokuapp.com/webhook")
 
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
