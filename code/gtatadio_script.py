@@ -58,6 +58,7 @@ def update_user(username, new_balance, new_spins, history):
 def get_initials(username):
     return username[:2].upper()
 
+# Маршрут для отображения главной страницы
 @app.route('/')
 def index():
     username = "kholodvlad"  # Пример имени, вместо этого используйте реальное имя пользователя из Telegram
@@ -71,6 +72,7 @@ def index():
 
     return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
 
+# Маршрут для сбора награды
 @app.route('/collect_reward', methods=['POST'])
 def collect_reward():
     data = request.json
@@ -98,23 +100,36 @@ def collect_reward():
     else:
         return jsonify({'error': 'User not found'}), 404
 
+# Настройка меню для запуска Mini App
+def set_menu_button(chat_id):
+    web_app_info = telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
+    menu_button = telebot.types.MenuButtonWebApp(text="Open App", web_app=web_app_info)
+    bot.set_chat_menu_button(chat_id=chat_id, menu_button=menu_button)
+
 # Обработка команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    # Устанавливаем меню кнопку для запуска Mini App
+    set_menu_button(message.chat.id)
+    
+    # Создаем Inline-кнопку для открытия Web App
     keyboard = telebot.types.InlineKeyboardMarkup()
     url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
     keyboard.add(url_button)
+    
     bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
-
 
 # Настройка вебхука
 @app.route("/webhook", methods=['POST'])
 def webhook():
-    json_str = request.get_data().decode('UTF-8')
-    update = telebot.types.Update.de_json(json_str)
-    bot.process_new_updates([update])
-    return '!', 200
-
+    try:
+        json_str = request.get_data().decode('UTF-8')
+        update = telebot.types.Update.de_json(json_str)
+        bot.process_new_updates([update])
+        return '!', 200
+    except Exception as e:
+        print(f"Error processing webhook: {e}")
+        return 'Error', 500
 
 if __name__ == "__main__":
     # Инициализируем базу данных при запуске
@@ -125,3 +140,4 @@ if __name__ == "__main__":
     bot.set_webhook(url="https://instagram-bot22-1d84ba019e98.herokuapp.com/webhook")
 
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
