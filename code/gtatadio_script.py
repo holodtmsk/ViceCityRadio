@@ -106,7 +106,7 @@ def collect_reward():
 
 # Настройка меню для запуска Mini App
 def set_menu_button(chat_id):
-    web_app_info = telebot.types.LoginUrl(url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
+   web_app_info = telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
     menu_button = telebot.types.MenuButtonWebApp(text="Open App", web_app=web_app_info)
     bot.set_chat_menu_button(chat_id=chat_id, menu_button=menu_button)
 
