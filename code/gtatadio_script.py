@@ -120,6 +120,6 @@ if __name__ == "__main__":
 
     # Устанавливаем вебхук
     bot.remove_webhook()
-    bot.set_webhook(url="https://your-app-url.com/" + bot.token)
+    bot.set_webhook(url="https://instagram-bot22.herokuapp.com/" + bot.token)
 
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
