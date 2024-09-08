@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container">
@@ -45,76 +46,104 @@
                 <img src="{{ url_for('static', filename='images/wallet_icon.png') }}" alt="Wallet" class="nav-icon">
                 <span>Wallet</span>
             </div>
-    </div>
+        </div>
+
         <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const farmingButton = document.getElementById('farming-button');
-        let farmingInProgress = false;
+            // Инициализация Telegram WebApp API
+            window.Telegram.WebApp.ready();
 
-        farmingButton.addEventListener('click', function () {
-            if (farmingInProgress || farmingButton.classList.contains('collect')) return;
+            // Получаем данные пользователя
+            const user = window.Telegram.WebApp.initDataUnsafe.user;
+            if (user) {
+                // Обновляем имя пользователя на странице
+                document.querySelector('.name').textContent = user.username;
 
-            // Запуск haptic feedback при нажатии кнопки
-            if (window.Telegram && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('light'); // Легкая вибрация
+                // Отправляем данные пользователя на сервер
+                fetch('/get_user_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: user.username,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        id: user.id
+                    }),
+                }).then(response => response.json())
+                  .then(data => console.log('User data sent successfully:', data))
+                  .catch(error => console.error('Error sending user data:', error));
             }
 
-            farmingInProgress = true;
-            farmingButton.classList.add('farming');
-            farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">5</span>';
+            // Остальной код для кнопки "Start Farming"
+            document.addEventListener('DOMContentLoaded', function () {
+                const farmingButton = document.getElementById('farming-button');
+                let farmingInProgress = false;
 
-            let timeLeft = 5;
-            const countdownInterval = setInterval(() => {
-                timeLeft--;
-                farmingButton.querySelector('.countdown').textContent = timeLeft;
+                farmingButton.addEventListener('click', function () {
+                    if (farmingInProgress || farmingButton.classList.contains('collect')) return;
 
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    farmingInProgress = false;
-                    farmingButton.classList.remove('farming');
-                    farmingButton.classList.add('collect');
-                    farmingButton.textContent = 'Collect reward';
-
-                    // Haptic feedback при завершении фарминга
+                    // Запуск haptic feedback при нажатии кнопки
                     if (window.Telegram && Telegram.WebApp.HapticFeedback) {
-                        Telegram.WebApp.HapticFeedback.impactOccurred('medium'); // Средняя вибрация
+                        Telegram.WebApp.HapticFeedback.impactOccurred('light'); // Легкая вибрация
                     }
-                }
-            }, 1000);
-        });
 
-        farmingButton.addEventListener('click', function () {
-            if (!farmingButton.classList.contains('collect')) return;
+                    farmingInProgress = true;
+                    farmingButton.classList.add('farming');
+                    farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">5</span>';
 
-            // Haptic feedback при сборе награды
-            if (window.Telegram && Telegram.WebApp.HapticFeedback) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('heavy'); // Сильная вибрация
-            }
+                    let timeLeft = 5;
+                    const countdownInterval = setInterval(() => {
+                        timeLeft--;
+                        farmingButton.querySelector('.countdown').textContent = timeLeft;
 
-            fetch('/collect_reward', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: 'kholodvlad' // Вставьте имя пользователя
-                }),
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.newBalance !== undefined && data.newSpins !== undefined) {
-                      document.querySelector('.balance').textContent = `$${data.newBalance}`;
-                      document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
-                  } else {
-                      console.error('Данные не получены.');
-                  }
-              }).catch(error => console.error('Ошибка:', error));
+                        if (timeLeft <= 0) {
+                            clearInterval(countdownInterval);
+                            farmingInProgress = false;
+                            farmingButton.classList.remove('farming');
+                            farmingButton.classList.add('collect');
+                            farmingButton.textContent = 'Collect reward';
 
-            farmingButton.classList.remove('collect');
-            farmingButton.textContent = 'Start Farming';
-        });
-    });
-</script>
-           
+                            // Haptic feedback при завершении фарминга
+                            if (window.Telegram && Telegram.WebApp.HapticFeedback) {
+                                Telegram.WebApp.HapticFeedback.impactOccurred('medium'); // Средняя вибрация
+                            }
+                        }
+                    }, 1000);
+                });
+
+                farmingButton.addEventListener('click', function () {
+                    if (!farmingButton.classList.contains('collect')) return;
+
+                    // Haptic feedback при сборе награды
+                    if (window.Telegram && Telegram.WebApp.HapticFeedback) {
+                        Telegram.WebApp.HapticFeedback.impactOccurred('heavy'); // Сильная вибрация
+                    }
+
+                    fetch('/collect_reward', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: user.username // Вставляем имя пользователя из Telegram WebApp
+                        }),
+                    }).then(response => response.json())
+                      .then(data => {
+                          if (data.newBalance !== undefined && data.newSpins !== undefined) {
+                              document.querySelector('.balance').textContent = `$${data.newBalance}`;
+                              document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
+                          } else {
+                              console.error('Данные не получены.');
+                          }
+                      }).catch(error => console.error('Ошибка:', error));
+
+                    farmingButton.classList.remove('collect');
+                    farmingButton.textContent = 'Start Farming';
+                });
+            });
+        </script>
     </div>
 </body>
 </html>
+
