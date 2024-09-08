@@ -9,6 +9,10 @@ bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
 # Удаляем вебхук, если он установлен
 bot.remove_webhook()
 
+# Проверка доступных атрибутов в telebot.types
+import telebot.types
+print(dir(telebot.types))  # Выводит все доступные атрибуты модуля types в консоль
+
 # Инициализация базы данных
 def init_db():
     conn = sqlite3.connect('user_data.db')
