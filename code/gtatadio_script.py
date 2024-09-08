@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, jsonify
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import CommandHandler, CallbackContext
 import telebot
 import sqlite3
 import os
@@ -8,6 +10,23 @@ bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
 
 # Удаляем вебхук, если он установлен
 bot.remove_webhook()
+
+# Обработка команды start
+def start(update: Update, context: CallbackContext):
+    # URL на ваше Telegram Mini App
+    mini_app_url = 'https://t.me/your_bot?start=mini_app'
+
+    # Формируем кнопку для открытия мини-приложения
+    keyboard = [
+        [InlineKeyboardButton("Open Mini App", url=mini_app_url)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Отправляем сообщение с кнопкой пользователю
+    update.message.reply_text('Welcome! Click the button below to open the Mini App:', reply_markup=reply_markup)
+
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
 
 # Инициализация базы данных
 def init_db():
