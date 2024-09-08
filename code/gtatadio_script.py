@@ -9,10 +9,6 @@ bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
 # Удаляем вебхук, если он установлен
 bot.remove_webhook()
 
-# Проверка доступных атрибутов в telebot.types
-import telebot.types
-print(dir(telebot.types))  # Выводит все доступные атрибуты модуля types в консоль
-
 # Инициализация базы данных
 def init_db():
     conn = sqlite3.connect('user_data.db')
@@ -106,7 +102,7 @@ def collect_reward():
 
 # Настройка меню для запуска Mini App
 def set_menu_button(chat_id):
-    web_app_info = telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
+    web_app_info = telebot.types.LoginUrl(url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
     menu_button = telebot.types.MenuButtonWebApp(text="Open App", web_app=web_app_info)
     bot.set_chat_menu_button(chat_id=chat_id, menu_button=menu_button)
 
@@ -126,9 +122,6 @@ def send_welcome(message):
         print(f"Message sent to {message.chat.id}")
     except Exception as e:
         print(f"Error: {e}")
-
-
-
 
 # Настройка вебхука
 @app.route("/webhook", methods=['POST'])
@@ -153,4 +146,3 @@ if __name__ == "__main__":
     bot.set_webhook(url="https://instagram-bot22-1d84ba019e98.herokuapp.com/webhook")
 
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
