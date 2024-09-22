@@ -60,7 +60,7 @@
 
                 // Отправляем данные пользователя на сервер через GET-запрос
                 fetch(`/get_user_data?username=${user.username}&first_name=${user.first_name}&last_name=${user.last_name}&id=${user.id}`, {
-                    method: 'GET',
+                    method: 'GET',  // Используем метод GET
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -114,9 +114,9 @@
                         Telegram.WebApp.HapticFeedback.impactOccurred('heavy'); // Сильная вибрация
                     }
 
-                    // Отправляем данные пользователя на сервер через POST-запрос
+                    // Отправляем данные пользователя на сервер через POST-запрос для получения награды
                     fetch('/collect_reward', {
-                        method: 'POST',
+                        method: 'POST', // Метод POST используется для передачи данных
                         headers: {
                             'Content-Type': 'application/json',
                         },
