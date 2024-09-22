@@ -60,7 +60,7 @@
 
                 // Отправляем данные пользователя на сервер
                 fetch('/get_user_data', {
-                    method: 'POST',
+                    method: 'GET', // Меняем на GET
                     headers: {
                         'Content-Type': 'application/json',
                     },
