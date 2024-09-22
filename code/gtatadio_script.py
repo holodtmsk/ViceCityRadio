@@ -104,14 +104,43 @@ def collect_reward():
     else:
         return jsonify({'error': 'User not found'}), 404
 
+# Настройка меню для запуска Mini App
+def set_menu_button(chat_id):
+    web_app_info = telebot.types.LoginUrl(url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
+    menu_button = telebot.types.MenuButtonWebApp(text="Open App", web_app=web_app_info)
+    bot.set_chat_menu_button(chat_id=chat_id, menu_button=menu_button)
+
+# Обработка команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    url_button = telebot.types.InlineKeyboardButton(text="Open Web App", url="https://your-app-url.com")
-    keyboard.add(url_button)
-    bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
+    try:
+        print(f"Processing /start for {message.chat.id}")
+        
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
+        keyboard.add(url_button)
+        
+        bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
+        print(f"Message sent to {message.chat.id}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+# Настройка вебхука
+@app.route("/webhook", methods=['POST'])
+def webhook():
+    try:
+        json_str = request.get_data().decode('UTF-8')
+        print(f"Webhook data received: {json_str}")
+        update = telebot.types.Update.de_json(json_str)
+        bot.process_new_updates([update])
+        return '!', 200
+    except Exception as e:
+        print(f"Error processing webhook: {e}")
+        return 'Error', 500
 
 if __name__ == "__main__":
-    # Инициализируем базу данных при запуске
     init_db()
+    bot.remove_webhook()
+    bot.set_webhook(url="https://instagram-bot22-1d84ba019e98.herokuapp.com/webhook")
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
