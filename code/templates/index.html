@@ -55,10 +55,7 @@
             // Получаем данные пользователя
             const user = window.Telegram.WebApp.initDataUnsafe.user;
             if (user) {
-                // Обновляем имя пользователя на странице
-                document.querySelector('.name').textContent = user.username;
-
-                // Отправляем данные пользователя на сервер через GET-запрос (если сервер поддерживает GET)
+                // Отправляем данные пользователя на сервер через GET-запрос
                 fetch(`/get_user_data?username=${user.username}&first_name=${user.first_name}&last_name=${user.last_name}&id=${user.id}`, {
                     method: 'GET',
                 }).then(response => {
@@ -122,7 +119,7 @@
                         Telegram.WebApp.HapticFeedback.impactOccurred('heavy'); // Сильная вибрация
                     }
 
-                    // Отправляем данные пользователя на сервер через POST-запрос (если сервер поддерживает POST)
+                    // Отправляем данные пользователя на сервер через POST-запрос
                     fetch('/collect_reward', {
                         method: 'POST',
                         headers: {
