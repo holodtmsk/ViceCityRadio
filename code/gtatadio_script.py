@@ -59,27 +59,30 @@ def get_initials(username):
     return username[:2].upper()
 
 # Маршрут для отображения главной страницы
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])  # Добавляем поддержку GET и POST
 def index():
-    # Получаем данные из запроса
-    data = request.json
-    username = data.get('username')  # Имя пользователя, переданное через запрос
+    if request.method == 'POST':
+        # Получаем данные из POST-запроса
+        data = request.json
+        username = data.get('username')  # Имя пользователя, переданное через запрос
 
-    if not username:
-        return jsonify({'error': 'Username is missing'}), 400
+        if not username:
+            return jsonify({'error': 'Username is missing'}), 400
 
-    # Проверяем, есть ли пользователь в базе данных
-    user = get_user(username)
-    if not user:
-        add_user(username)  # Если нет, создаем нового пользователя
+        # Проверяем, есть ли пользователь в базе данных
         user = get_user(username)
+        if not user:
+            add_user(username)  # Если нет, создаем нового пользователя
+            user = get_user(username)
 
-    # Получаем инициалы
-    initials = get_initials(username)
+        # Получаем инициалы
+        initials = get_initials(username)
 
-    # Возвращаем HTML-страницу с балансом, количеством спинов и именем пользователя
-    return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
-
+        # Возвращаем HTML-страницу с балансом, количеством спинов и именем пользователя
+        return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
+    
+    elif request.method == 'GET':  # Добавляем обработку GET-запроса
+        return render_template('index.html')
 
 # Маршрут для сбора награды
 @app.route('/collect_reward', methods=['POST'])
@@ -119,14 +122,12 @@ def set_menu_button(chat_id):
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     try:
-        # Отладочное сообщение в консоль
         print(f"Processing /start for {message.chat.id}")
         
         keyboard = telebot.types.InlineKeyboardMarkup()
         url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
         keyboard.add(url_button)
         
-        # Отправляем сообщение с кнопкой
         bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
         print(f"Message sent to {message.chat.id}")
     except Exception as e:
@@ -145,13 +146,8 @@ def webhook():
         print(f"Error processing webhook: {e}")
         return 'Error', 500
 
-
 if __name__ == "__main__":
-    # Инициализируем базу данных при запуске
     init_db()
-
-    # Устанавливаем вебхук
     bot.remove_webhook()
     bot.set_webhook(url="https://instagram-bot22-1d84ba019e98.herokuapp.com/webhook")
-
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
