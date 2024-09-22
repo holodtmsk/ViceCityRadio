@@ -24,14 +24,14 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Функция для добавления нового пользователя
+# Функция для добавления нового пользователя с начальными значениями
 def add_user(username):
     conn = sqlite3.connect('user_data.db')
     cursor = conn.cursor()
     cursor.execute('''
         INSERT INTO users (username, balance, spins, history)
         VALUES (?, ?, ?, ?)
-    ''', (username, 0, 0, ''))
+    ''', (username, 1000, 5, ''))  # Начальный баланс 1000 и 5 спинов
     conn.commit()
     conn.close()
 
@@ -54,12 +54,12 @@ def update_user(username, new_balance, new_spins, history):
     conn.commit()
     conn.close()
 
-# Функция для получения инициалов (первые 2 буквы)
-def get_initials(username):
-    return username[:2].upper()
+# Функция для получения первой буквы имени
+def get_initial(username):
+    return username[0].upper()  # Первая буква имени капсом
 
 # Маршрут для отображения главной страницы
-@app.route('/', methods=['GET', 'POST'])  # Добавляем поддержку GET и POST
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         # Получаем данные из POST-запроса
@@ -75,13 +75,13 @@ def index():
             add_user(username)  # Если нет, создаем нового пользователя
             user = get_user(username)
 
-        # Получаем инициалы
-        initials = get_initials(username)
+        # Получаем первую букву имени (инициал)
+        initial = get_initial(username)
 
         # Возвращаем HTML-страницу с балансом, количеством спинов и именем пользователя
-        return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
+        return render_template('index.html', balance=user[1], spins=user[2], username=username, initial=initial)
     
-    elif request.method == 'GET':  # Добавляем обработку GET-запроса
+    elif request.method == 'GET':
         return render_template('index.html')
 
 # Маршрут для сбора награды
@@ -151,3 +151,4 @@ if __name__ == "__main__":
     bot.remove_webhook()
     bot.set_webhook(url="https://instagram-bot22-1d84ba019e98.herokuapp.com/webhook")
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
