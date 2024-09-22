@@ -1,117 +1,120 @@
-from flask import Flask, render_template, request, jsonify
-import telebot
-import sqlite3
-import os
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Game Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="profile">
+            <!-- Отображаем инициалы пользователя на аватаре -->
+            <div class="avatar">{{ initials }}</div>
+            <!-- Отображаем имя пользователя -->
+            <div class="name">{{ username }}</div>
+            <!-- Вставляем баланс и количество спинов, переданные сервером -->
+            <div class="balance">${{ balance }}</div>
+            <div class="tickets">
+                🎟️ {{ spins }}
+            </div>
+        </div>
+        
+        <div class="slot-game">
+            <span class="slot-game-text">SLOT GAME</span>
+            <img src="{{ url_for('static', filename='images/slot_machine.png') }}" alt="Slot Machine" class="icon">
+            <button class="play-button">PLAY</button>
+        </div>
 
-app = Flask(__name__)
-bot = telebot.TeleBot("7503606129:AAEVHZPaRJhwRsPfAs2XrFDjybDSqHaS9_w")
+        <div class="container">
+            <button id="farming-button" class="start-button">Start Farming</button>
+        </div>
 
-# Удаляем вебхук, если он установлен
-bot.remove_webhook()
+        <div class="navigation-bar">
+            <div class="nav-item">
+                <img src="{{ url_for('static', filename='images/home_icon.png') }}" alt="Home" class="nav-icon">
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <img src="{{ url_for('static', filename='images/frens_icon.png') }}" alt="Frens" class="nav-icon">
+                <span>Frens</span>
+            </div>
+            <div class="nav-item">
+                <img src="{{ url_for('static', filename='images/wallet_icon.png') }}" alt="Wallet" class="nav-icon">
+                <span>Wallet</span>
+            </div>
+    </div>
+        <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const farmingButton = document.getElementById('farming-button');
+        let farmingInProgress = false;
 
-# Инициализация базы данных
-def init_db():
-    conn = sqlite3.connect('user_data.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY,
-            balance INTEGER NOT NULL,
-            spins INTEGER NOT NULL,
-            history TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+        farmingButton.addEventListener('click', function () {
+            if (farmingInProgress || farmingButton.classList.contains('collect')) return;
 
-# Функция для добавления нового пользователя
-def add_user(username):
-    conn = sqlite3.connect('user_data.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO users (username, balance, spins, history)
-        VALUES (?, ?, ?, ?)
-    ''', (username, 0, 0, ''))
-    conn.commit()
-    conn.close()
+            // Запуск haptic feedback при нажатии кнопки
+            if (window.Telegram && Telegram.WebApp.HapticFeedback) {
+                Telegram.WebApp.HapticFeedback.impactOccurred('light'); // Легкая вибрация
+            }
 
-# Функция для получения данных пользователя
-def get_user(username):
-    conn = sqlite3.connect('user_data.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
+            farmingInProgress = true;
+            farmingButton.classList.add('farming');
+            farmingButton.innerHTML = '🎟 Farming goods... <span class="countdown">5</span>';
 
-# Функция для обновления данных пользователя
-def update_user(username, new_balance, new_spins, history):
-    conn = sqlite3.connect('user_data.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        UPDATE users SET balance = ?, spins = ?, history = ? WHERE username = ?
-    ''', (new_balance, new_spins, history, username))
-    conn.commit()
-    conn.close()
+            let timeLeft = 5;
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                farmingButton.querySelector('.countdown').textContent = timeLeft;
 
-# Функция для получения инициалов (первые 2 буквы)
-def get_initials(username):
-    return username[:2].upper()
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    farmingInProgress = false;
+                    farmingButton.classList.remove('farming');
+                    farmingButton.classList.add('collect');
+                    farmingButton.textContent = 'Collect reward';
 
-@app.route('/')
-def index():
-    # Замените "telegram_username" на реальное имя пользователя из Telegram
-    username = "kholodvlad"  # Пример имени, вместо этого используйте реальное имя пользователя из Telegram
-    
-    user = get_user(username)
-    if not user:
-        add_user(username)
-        user = get_user(username)
+                    // Haptic feedback при завершении фарминга
+                    if (window.Telegram && Telegram.WebApp.HapticFeedback) {
+                        Telegram.WebApp.HapticFeedback.impactOccurred('medium'); // Средняя вибрация
+                    }
+                }
+            }, 1000);
+        });
 
-    # Получаем инициалы
-    initials = get_initials(username)
+        farmingButton.addEventListener('click', function () {
+            if (!farmingButton.classList.contains('collect')) return;
 
-    # Передаем имя пользователя, баланс, спины и инициалы в шаблон для рендеринга
-    return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
+            // Haptic feedback при сборе награды
+            if (window.Telegram && Telegram.WebApp.HapticFeedback) {
+                Telegram.WebApp.HapticFeedback.impactOccurred('heavy'); // Сильная вибрация
+            }
 
-@app.route('/collect_reward', methods=['POST'])
-def collect_reward():
-    data = request.json
-    username = data.get('username')
+            fetch('/collect_reward', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: 'kholodvlad' // Вставьте имя пользователя
+                }),
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.newBalance !== undefined && data.newSpins !== undefined) {
+                      document.querySelector('.balance').textContent = `$${data.newBalance}`;
+                      document.querySelector('.tickets').textContent = `🎟️ ${data.newSpins}`;
+                  } else {
+                      console.error('Данные не получены.');
+                  }
+              }).catch(error => console.error('Ошибка:', error));
 
-    # Проверка наличия имени пользователя
-    if not username:
-        return jsonify({'error': 'Username is missing'}), 400
-
-    spins_earned = 3  # Количество спинов, которые зарабатывает пользователь
-    money_earned = 1000  # Сумма денег, которую зарабатывает пользователь
-
-    # Получаем данные пользователя
-    user = get_user(username)
-    
-    if user:
-        balance = user[1] + money_earned
-        spins = user[2] + spins_earned
-        history = user[3] + f"Earned {money_earned} and {spins_earned} spins. "
-
-        # Обновляем данные пользователя
-        update_user(username, balance, spins, history)
-
-        return jsonify({
-            'newBalance': balance,
-            'newSpins': spins
-        })
-    else:
-        return jsonify({'error': 'User not found'}), 404
-
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    url_button = telebot.types.InlineKeyboardButton(text="Open Web App", url="https://your-app-url.com")
-    keyboard.add(url_button)
-    bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
-
-if __name__ == "__main__":
-    # Инициализируем базу данных при запуске
-    init_db()
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+            farmingButton.classList.remove('collect');
+            farmingButton.textContent = 'Start Farming';
+        });
+    });
+</script>
+           
+    </div>
+</body>
+</html>
