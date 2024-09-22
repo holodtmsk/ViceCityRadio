@@ -58,18 +58,12 @@
                 // Обновляем имя пользователя на странице
                 document.querySelector('.name').textContent = user.username;
 
-                // Отправляем данные пользователя на сервер
-                fetch('/get_user_data', {
-                    method: 'GET', // Меняем на GET
+                // Отправляем данные пользователя на сервер через GET-запрос
+                fetch(`/get_user_data?username=${user.username}&first_name=${user.first_name}&last_name=${user.last_name}&id=${user.id}`, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        username: user.username,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        id: user.id
-                    }),
                 }).then(response => response.json())
                   .then(data => console.log('User data sent successfully:', data))
                   .catch(error => console.error('Error sending user data:', error));
@@ -120,6 +114,7 @@
                         Telegram.WebApp.HapticFeedback.impactOccurred('heavy'); // Сильная вибрация
                     }
 
+                    // Отправляем данные пользователя на сервер через POST-запрос
                     fetch('/collect_reward', {
                         method: 'POST',
                         headers: {
