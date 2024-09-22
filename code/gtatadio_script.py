@@ -24,14 +24,14 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Функция для добавления нового пользователя с начальными значениями
+# Функция для добавления нового пользователя
 def add_user(username):
     conn = sqlite3.connect('user_data.db')
     cursor = conn.cursor()
     cursor.execute('''
         INSERT INTO users (username, balance, spins, history)
         VALUES (?, ?, ?, ?)
-    ''', (username, 1000, 5, ''))  # Начальный баланс 1000 и 5 спинов
+    ''', (username, 0, 0, ''))
     conn.commit()
     conn.close()
 
@@ -54,48 +54,39 @@ def update_user(username, new_balance, new_spins, history):
     conn.commit()
     conn.close()
 
-# Функция для получения первой буквы имени
-def get_initial(username):
-    return username[0].upper()  # Первая буква имени капсом
+# Функция для получения инициалов (первые 2 буквы)
+def get_initials(username):
+    return username[:2].upper()
 
-# Маршрут для отображения главной страницы
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        # Получаем данные из POST-запроса
-        data = request.json
-        username = data.get('username')  # Имя пользователя, переданное через запрос
-
-        if not username:
-            return jsonify({'error': 'Username is missing'}), 400
-
-        # Проверяем, есть ли пользователь в базе данных
-        user = get_user(username)
-        if not user:
-            add_user(username)  # Если нет, создаем нового пользователя
-            user = get_user(username)
-
-        # Получаем первую букву имени (инициал)
-        initial = get_initial(username)
-
-        # Возвращаем HTML-страницу с балансом, количеством спинов и именем пользователя
-        return render_template('index.html', balance=user[1], spins=user[2], username=username, initial=initial)
+    # Замените "telegram_username" на реальное имя пользователя из Telegram
+    username = "kholodvlad"  # Пример имени, вместо этого используйте реальное имя пользователя из Telegram
     
-    elif request.method == 'GET':
-        return render_template('index.html')
+    user = get_user(username)
+    if not user:
+        add_user(username)
+        user = get_user(username)
 
-# Маршрут для сбора награды
+    # Получаем инициалы
+    initials = get_initials(username)
+
+    # Передаем имя пользователя, баланс, спины и инициалы в шаблон для рендеринга
+    return render_template('index.html', balance=user[1], spins=user[2], username=username, initials=initials)
+
 @app.route('/collect_reward', methods=['POST'])
 def collect_reward():
     data = request.json
     username = data.get('username')
 
+    # Проверка наличия имени пользователя
     if not username:
         return jsonify({'error': 'Username is missing'}), 400
 
-    spins_earned = 3
-    money_earned = 1000
+    spins_earned = 3  # Количество спинов, которые зарабатывает пользователь
+    money_earned = 1000  # Сумма денег, которую зарабатывает пользователь
 
+    # Получаем данные пользователя
     user = get_user(username)
     
     if user:
@@ -103,6 +94,7 @@ def collect_reward():
         spins = user[2] + spins_earned
         history = user[3] + f"Earned {money_earned} and {spins_earned} spins. "
 
+        # Обновляем данные пользователя
         update_user(username, balance, spins, history)
 
         return jsonify({
@@ -112,43 +104,14 @@ def collect_reward():
     else:
         return jsonify({'error': 'User not found'}), 404
 
-# Настройка меню для запуска Mini App
-def set_menu_button(chat_id):
-    web_app_info = telebot.types.LoginUrl(url="https://instagram-bot22-1d84ba019e98.herokuapp.com")
-    menu_button = telebot.types.MenuButtonWebApp(text="Open App", web_app=web_app_info)
-    bot.set_chat_menu_button(chat_id=chat_id, menu_button=menu_button)
-
-# Обработка команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    try:
-        print(f"Processing /start for {message.chat.id}")
-        
-        keyboard = telebot.types.InlineKeyboardMarkup()
-        url_button = telebot.types.InlineKeyboardButton(text="Open Web App", web_app=telebot.types.WebAppInfo(url="https://instagram-bot22-1d84ba019e98.herokuapp.com"))
-        keyboard.add(url_button)
-        
-        bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
-        print(f"Message sent to {message.chat.id}")
-    except Exception as e:
-        print(f"Error: {e}")
-
-# Настройка вебхука
-@app.route("/webhook", methods=['POST'])
-def webhook():
-    try:
-        json_str = request.get_data().decode('UTF-8')
-        print(f"Webhook data received: {json_str}")
-        update = telebot.types.Update.de_json(json_str)
-        bot.process_new_updates([update])
-        return '!', 200
-    except Exception as e:
-        print(f"Error processing webhook: {e}")
-        return 'Error', 500
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    url_button = telebot.types.InlineKeyboardButton(text="Open Web App", url="https://your-app-url.com")
+    keyboard.add(url_button)
+    bot.send_message(message.chat.id, "Click the button to open the app:", reply_markup=keyboard)
 
 if __name__ == "__main__":
+    # Инициализируем базу данных при запуске
     init_db()
-    bot.remove_webhook()
-    bot.set_webhook(url="https://instagram-bot22-1d84ba019e98.herokuapp.com/webhook")
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
