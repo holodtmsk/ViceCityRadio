@@ -33,7 +33,7 @@ def add_category(update: Update, context):
 
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO categories (name, user_id) VALUES (?, ?)", (category_name, user.id))
+    cursor.execute("INSERT INTO categories (name, user_id) VALUES (?, ?)", (category_name.lower(), user.id))
     conn.commit()
     conn.close()
     
@@ -59,7 +59,7 @@ def show_categories(update: Update, context):
 # Обработка выбора категории и запись траты
 def handle_expense(update: Update, context):
     user = update.message.from_user
-    category_name = update.message.text
+    category_name = update.message.text.lower()
 
     # Ищем категорию в базе данных
     conn = sqlite3.connect('finance_bot.db')
