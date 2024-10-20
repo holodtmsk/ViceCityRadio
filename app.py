@@ -6,7 +6,8 @@ def start(update: Update, context):
     # Создаем кнопки
     keyboard = [['Продукты', 'Кафе', 'Машина']]
     
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+    # Убираем one_time_keyboard, чтобы кнопки не пропадали
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     # Отправляем сообщение с кнопками
     update.message.reply_text('Выберите категорию:', reply_markup=reply_markup)
@@ -43,3 +44,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
