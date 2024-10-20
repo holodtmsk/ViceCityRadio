@@ -26,7 +26,7 @@ def help_command(update, context):
 
 def main():
     # Получаем токен и устанавливаем updater
-    TOKEN = os.getenv('TELEGRAM_TOKEN', 'YOUR_TELEGRAM_BOT_TOKEN')
+    TOKEN = os.getenv('TELEGRAM_TOKEN', '7726770034:AAE_X60ycvljNiGE-j0qLhjNaWZiPlpPRNU')
     updater = Updater(TOKEN, use_context=True)
 
     # Регистрируем команды
