@@ -249,6 +249,63 @@ def report_today(update: Update, context):
 
     conn.close()
 
+# Отчеты по тратам за неделю
+def report_week(update: Update, context):
+    user = update.message.from_user
+    conn = sqlite3.connect('finance_bot.db')
+    cursor = conn.cursor()
+
+    # Получаем траты с начала текущей недели (понедельник)
+    cursor.execute("""
+        SELECT c.name, SUM(e.amount)
+        FROM expenses e
+        JOIN categories c ON e.category_id = c.id
+        WHERE strftime('%W', e.date) = strftime('%W', 'now')
+        AND e.user_id = ?
+        GROUP BY c.name
+    """, (user.id,))
+    result = cursor.fetchall()
+
+    if result:
+        report = "\n".join([f"{row[0]}: {row[1]} руб." for row in result])
+        update.message.reply_text(f"Отчёт за неделю:\n{report}")
+    else:
+        update.message.reply_text("Нет данных за эту неделю.")
+    
+    conn.close()
+
+# Отчеты по тратам за определенную дату
+def report_date(update: Update, context):
+    user = update.message.from_user
+    args = context.args
+    if len(args) == 0:
+        update.message.reply_text("Пожалуйста, укажите дату в формате ДД.ММ.ГГ.")
+        return
+    
+    date = args[0]
+    
+    conn = sqlite3.connect('finance_bot.db')
+    cursor = conn.cursor()
+
+    # Получаем траты за указанную дату
+    cursor.execute("""
+        SELECT c.name, SUM(e.amount)
+        FROM expenses e
+        JOIN categories c ON e.category_id = c.id
+        WHERE date(e.date) = date(?, 'localtime')
+        AND e.user_id = ?
+        GROUP BY c.name
+    """, (date, user.id))
+    result = cursor.fetchall()
+
+    if result:
+        report = "\n".join([f"{row[0]}: {row[1]} руб." for row in result])
+        update.message.reply_text(f"Отчёт за {date}:\n{report}")
+    else:
+        update.message.reply_text(f"Нет данных за {date}.")
+    
+    conn.close()
+
 # Основная функция запуска бота
 def main():
     # Инициализация бота
