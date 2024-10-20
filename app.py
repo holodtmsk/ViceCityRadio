@@ -25,7 +25,7 @@ def init_db():
 # Регистрация новой категории
 def add_category(update: Update, context):
     user = update.message.from_user
-    category_name = " ".join(context.args)
+    category_name = " ".join(context.args).strip().lower()
     
     if not category_name:
         update.message.reply_text("Пожалуйста, укажите название категории.")
@@ -33,7 +33,7 @@ def add_category(update: Update, context):
 
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO categories (name, user_id) VALUES (?, ?)", (category_name.lower(), user.id))
+    cursor.execute("INSERT INTO categories (name, user_id) VALUES (?, ?)", (category_name, user.id))
     conn.commit()
     conn.close()
     
@@ -51,7 +51,7 @@ def show_categories(update: Update, context):
         return
 
     # Формируем список кнопок для каждой категории
-    category_buttons = [[category[0]] for category in categories]
+    category_buttons = [[category[0].capitalize()] for category in categories]  # Добавлено приведение к заглавной букве
     
     reply_markup = ReplyKeyboardMarkup(category_buttons, one_time_keyboard=False, resize_keyboard=True)
     update.message.reply_text('Выберите категорию:', reply_markup=reply_markup)
@@ -59,12 +59,12 @@ def show_categories(update: Update, context):
 # Обработка выбора категории и запись траты
 def handle_expense(update: Update, context):
     user = update.message.from_user
-    category_name = update.message.text.lower()
+    category_name = update.message.text.lower()  # Приведение текста к нижнему регистру
 
     # Ищем категорию в базе данных
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (category_name, user.id))
+    cursor.execute("SELECT id FROM categories WHERE LOWER(name) = ? AND user_id = ?", (category_name, user.id))  # Приведение имени к нижнему регистру
     category = cursor.fetchone()
 
     if not category:
