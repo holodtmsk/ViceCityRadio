@@ -1,4 +1,3 @@
-import os
 import sqlite3
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters
@@ -60,57 +59,22 @@ def delkat(update: Update, context):
         update.message.reply_text("Пожалуйста, укажите название категории.")
         return
     
-    category_name = args[0]
+    category_name = " ".join(args).strip()
     
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
 
-    # Получение id категории
-    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (category_name, user.id))
+    cursor.execute("SELECT id FROM categories WHERE TRIM(name) = ? AND user_id = ?", (category_name, user.id))
     category = cursor.fetchone()
 
     if category:
         category_id = category[0]
-        # Удаление трат по категории
         cursor.execute("DELETE FROM expenses WHERE category_id = ?", (category_id,))
-        # Удаление самой категории
         cursor.execute("DELETE FROM categories WHERE id = ?", (category_id,))
         conn.commit()
         update.message.reply_text(f"Категория {category_name} и все связанные с ней траты удалены.")
     else:
         update.message.reply_text("Категория не найдена.")
-    
-    conn.close()
-
-# Перенос трат из одной категории в другую
-def transkat(update: Update, context):
-    user = update.message.from_user
-    args = context.args
-    if len(args) < 4 or args[1].lower() != "to":
-        update.message.reply_text("Использование: /transkat <из категории> to <в категорию>")
-        return
-    
-    from_category = args[0]
-    to_category = args[2]
-    
-    conn = sqlite3.connect('finance_bot.db')
-    cursor = conn.cursor()
-    
-    # Получение id категорий
-    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (from_category, user.id))
-    from_cat = cursor.fetchone()
-    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (to_category, user.id))
-    to_cat = cursor.fetchone()
-
-    if from_cat and to_cat:
-        from_cat_id = from_cat[0]
-        to_cat_id = to_cat[0]
-        # Перенос трат
-        cursor.execute("UPDATE expenses SET category_id = ? WHERE category_id = ?", (to_cat_id, from_cat_id))
-        conn.commit()
-        update.message.reply_text(f"Все траты из категории {from_category} перенесены в {to_category}.")
-    else:
-        update.message.reply_text("Одна или обе категории не найдены.")
     
     conn.close()
 
@@ -128,7 +92,6 @@ def renamekat(update: Update, context):
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
     
-    # Обновление названия категории
     cursor.execute("UPDATE categories SET name = ? WHERE name = ? AND user_id = ?", (new_name, old_name, user.id))
     conn.commit()
     
@@ -139,47 +102,7 @@ def renamekat(update: Update, context):
     
     conn.close()
 
-# Приглашение нового пользователя
-def invite(update: Update, context):
-    admin_user = update.message.from_user
-    if len(context.args) == 0:
-        update.message.reply_text("Пожалуйста, укажите пользователя для приглашения.")
-        return
-
-    invited_username = context.args[0].replace('@', '')
-    conn = sqlite3.connect('finance_bot.db')
-    cursor = conn.cursor()
-
-    # Проверка, является ли отправитель администратором
-    cursor.execute("SELECT is_admin FROM users WHERE username = ? AND is_admin = 1", (admin_user.username,))
-    if cursor.fetchone() is None:
-        update.message.reply_text("У вас нет прав на приглашение пользователей.")
-        return
-
-    # Добавление нового пользователя
-    cursor.execute("INSERT OR IGNORE INTO users (username, is_admin) VALUES (?, 0)", (invited_username,))
-    conn.commit()
-    update.message.reply_text(f"Пользователь @{invited_username} приглашён.")
-    conn.close()
-
-# Вывод списка всех команд
-def help_command(update: Update, context):
-    help_text = (
-        "/regkat <название категории> [эмодзи] - добавить категорию\n"
-        "/delkat <название категории> - удалить категорию и все траты по ней\n"
-        "/transkat <из категории> to <в категорию> - перенести все траты из одной категории в другую\n"
-        "/renamekat <старое название> to <новое название> - переименовать категорию\n"
-        "/invite <@ник пользователя> - пригласить нового пользователя\n"
-        "/today - отчёт по тратам за сегодня\n"
-        "/week - отчёт по тратам за неделю\n"
-        "/month - отчёт по тратам за месяц\n"
-        "/date <дата> - отчёт по тратам за определённую дату\n"
-        "/daterange <дата1> - <дата2> - отчёт по тратам за период\n"
-        "/help - список всех команд"
-    )
-    update.message.reply_text(help_text)
-
-# Вывод кнопок с категориями
+# Отображение категорий в виде кнопок
 def show_categories(update: Update, context):
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
@@ -197,42 +120,57 @@ def show_categories(update: Update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text('Выберите категорию:', reply_markup=reply_markup)
 
-# Обработка нажатий на категории
-def button_click(update: Update, context):
+# Числовая клавиатура для ввода суммы
+def show_num_keyboard(update: Update, context):
+    keyboard = [
+        [InlineKeyboardButton("1", callback_data="1"), InlineKeyboardButton("2", callback_data="2"), InlineKeyboardButton("3", callback_data="3")],
+        [InlineKeyboardButton("4", callback_data="4"), InlineKeyboardButton("5", callback_data="5"), InlineKeyboardButton("6", callback_data="6")],
+        [InlineKeyboardButton("7", callback_data="7"), InlineKeyboardButton("8", callback_data="8"), InlineKeyboardButton("9", callback_data="9")],
+        [InlineKeyboardButton(".", callback_data="."), InlineKeyboardButton("0", callback_data="0"), InlineKeyboardButton("C", callback_data="clear")],
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('Введите сумму:', reply_markup=reply_markup)
+
+# Обработка нажатий на клавиатуру
+def num_keyboard_click(update: Update, context):
     query = update.callback_query
     query.answer()
 
-    category_id = query.data
-    context.user_data['category_id'] = category_id
-    query.edit_message_text(text=f"Введите сумму для категории {category_id}:")
+    current_sum = context.user_data.get('sum', "")
     
-# Хендлер для ввода суммы
-def handle_message(update: Update, context):
+    if query.data == "clear":
+        current_sum = ""  # Сброс суммы
+    else:
+        current_sum += query.data  # Добавляем цифру
+
+    context.user_data['sum'] = current_sum
+    query.edit_message_text(text=f"Введите сумму: {current_sum}")
+
+# Запись траты и вывод отчета
+def handle_expense(update: Update, context):
     user = update.message.from_user
-    if 'category_id' not in context.user_data:
-        update.message.reply_text("Пожалуйста, выберите категорию.")
+    category_id = context.user_data.get('category_id', None)
+    sum_amount = context.user_data.get('sum', None)
+
+    if not category_id or not sum_amount:
+        update.message.reply_text("Пожалуйста, выберите категорию и введите сумму.")
         return
-    
-    try:
-        amount = float(update.message.text)
-    except ValueError:
-        update.message.reply_text("Пожалуйста, введите корректную сумму.")
-        return
-    
-    category_id = context.user_data['category_id']
-    
+
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
     
-    # Добавление траты в базу данных
-    cursor.execute("INSERT INTO expenses (category_id, amount, date, user_id) VALUES (?, ?, date('now'), ?)", (category_id, amount, user.id))
+    cursor.execute("INSERT INTO expenses (category_id, amount, date, user_id) VALUES (?, ?, date('now'), ?)", (category_id, sum_amount, user.id))
     conn.commit()
-    conn.close()
     
-    update.message.reply_text(f"Записано: {amount} руб.")
-    del context.user_data['category_id']
+    context.user_data['sum'] = ""
+    
+    update.message.reply_text(f"Записано: {sum_amount} руб. на {category_id}")
+    
+    report_today(update, context)
+    conn.close()
 
-# Отчеты по тратам за сегодня
+# Отчет за сегодня
 def report_today(update: Update, context):
     user = update.message.from_user
     conn = sqlite3.connect('finance_bot.db')
@@ -249,85 +187,19 @@ def report_today(update: Update, context):
 
     conn.close()
 
-# Отчеты по тратам за неделю
-def report_week(update: Update, context):
-    user = update.message.from_user
-    conn = sqlite3.connect('finance_bot.db')
-    cursor = conn.cursor()
-
-    # Получаем траты с начала текущей недели (понедельник)
-    cursor.execute("""
-        SELECT c.name, SUM(e.amount)
-        FROM expenses e
-        JOIN categories c ON e.category_id = c.id
-        WHERE strftime('%W', e.date) = strftime('%W', 'now')
-        AND e.user_id = ?
-        GROUP BY c.name
-    """, (user.id,))
-    result = cursor.fetchall()
-
-    if result:
-        report = "\n".join([f"{row[0]}: {row[1]} руб." for row in result])
-        update.message.reply_text(f"Отчёт за неделю:\n{report}")
-    else:
-        update.message.reply_text("Нет данных за эту неделю.")
-    
-    conn.close()
-
-# Отчеты по тратам за определенную дату
-def report_date(update: Update, context):
-    user = update.message.from_user
-    args = context.args
-    if len(args) == 0:
-        update.message.reply_text("Пожалуйста, укажите дату в формате ДД.ММ.ГГ.")
-        return
-    
-    date = args[0]
-    
-    conn = sqlite3.connect('finance_bot.db')
-    cursor = conn.cursor()
-
-    # Получаем траты за указанную дату
-    cursor.execute("""
-        SELECT c.name, SUM(e.amount)
-        FROM expenses e
-        JOIN categories c ON e.category_id = c.id
-        WHERE date(e.date) = date(?, 'localtime')
-        AND e.user_id = ?
-        GROUP BY c.name
-    """, (date, user.id))
-    result = cursor.fetchall()
-
-    if result:
-        report = "\n".join([f"{row[0]}: {row[1]} руб." for row in result])
-        update.message.reply_text(f"Отчёт за {date}:\n{report}")
-    else:
-        update.message.reply_text(f"Нет данных за {date}.")
-    
-    conn.close()
-
 # Основная функция запуска бота
 def main():
-    # Инициализация бота
-    updater = Updater(os.getenv('TELEGRAM_TOKEN', '7726770034:AAE_X60ycvljNiGE-j0qLhjNaWZiPlpPRNU'), use_context=True)
-    
-    # Инициализация базы данных
+    updater = Updater("7726770034:AAE_X60ycvljNiGE-j0qLhjNaWZiPlpPRNU", use_context=True)
     init_db()
-    
-    # Регистрация команд
+
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("regkat", regkat))
     dp.add_handler(CommandHandler("delkat", delkat))
-    dp.add_handler(CommandHandler("transkat", transkat))
     dp.add_handler(CommandHandler("renamekat", renamekat))
-    dp.add_handler(CommandHandler("invite", invite))
-    dp.add_handler(CommandHandler("help", help_command))
     dp.add_handler(CommandHandler("today", report_today))
+    dp.add_handler(CallbackQueryHandler(num_keyboard_click))
     dp.add_handler(CommandHandler("categories", show_categories))
-    dp.add_handler(CallbackQueryHandler(button_click))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
 
-    # Запуск бота
     updater.start_polling()
     updater.idle()
 
