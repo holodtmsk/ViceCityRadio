@@ -48,6 +48,109 @@ def regkat(update: Update, context):
     
     update.message.reply_text(f"Категория {category_name} {emoji} добавлена!")
 
+# Удаление категории и всех трат по ней
+def delkat(update: Update, context):
+    user = update.message.from_user
+    args = context.args
+    if len(args) == 0:
+        update.message.reply_text("Пожалуйста, укажите название категории.")
+        return
+    
+    category_name = args[0]
+    
+    conn = sqlite3.connect('finance_bot.db')
+    cursor = conn.cursor()
+
+    # Получение id категории
+    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (category_name, user.id))
+    category = cursor.fetchone()
+
+    if category:
+        category_id = category[0]
+        # Удаление трат по категории
+        cursor.execute("DELETE FROM expenses WHERE category_id = ?", (category_id,))
+        # Удаление самой категории
+        cursor.execute("DELETE FROM categories WHERE id = ?", (category_id,))
+        conn.commit()
+        update.message.reply_text(f"Категория {category_name} и все связанные с ней траты удалены.")
+    else:
+        update.message.reply_text("Категория не найдена.")
+    
+    conn.close()
+
+# Перенос трат из одной категории в другую
+def transkat(update: Update, context):
+    user = update.message.from_user
+    args = context.args
+    if len(args) < 4 or args[1].lower() != "to":
+        update.message.reply_text("Использование: /transkat <из категории> to <в категорию>")
+        return
+    
+    from_category = args[0]
+    to_category = args[2]
+    
+    conn = sqlite3.connect('finance_bot.db')
+    cursor = conn.cursor()
+    
+    # Получение id категорий
+    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (from_category, user.id))
+    from_cat = cursor.fetchone()
+    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (to_category, user.id))
+    to_cat = cursor.fetchone()
+
+    if from_cat and to_cat:
+        from_cat_id = from_cat[0]
+        to_cat_id = to_cat[0]
+        # Перенос трат
+        cursor.execute("UPDATE expenses SET category_id = ? WHERE category_id = ?", (to_cat_id, from_cat_id))
+        conn.commit()
+        update.message.reply_text(f"Все траты из категории {from_category} перенесены в {to_category}.")
+    else:
+        update.message.reply_text("Одна или обе категории не найдены.")
+    
+    conn.close()
+
+# Переименование категории
+def renamekat(update: Update, context):
+    user = update.message.from_user
+    args = context.args
+    if len(args) < 3 or args[1].lower() != "to":
+        update.message.reply_text("Использование: /renamekat <старое название> to <новое название>")
+        return
+    
+    old_name = args[0]
+    new_name = args[2]
+    
+    conn = sqlite3.connect('finance_bot.db')
+    cursor = conn.cursor()
+    
+    # Обновление названия категории
+    cursor.execute("UPDATE categories SET name = ? WHERE name = ? AND user_id = ?", (new_name, old_name, user.id))
+    conn.commit()
+    
+    if cursor.rowcount > 0:
+        update.message.reply_text(f"Категория {old_name} переименована в {new_name}.")
+    else:
+        update.message.reply_text("Категория не найдена.")
+    
+    conn.close()
+
+# Вывод списка всех команд
+def help_command(update: Update, context):
+    help_text = (
+        "/regkat <название категории> [эмодзи] - добавить категорию\n"
+        "/delkat <название категории> - удалить категорию и все траты по ней\n"
+        "/transkat <из категории> to <в категорию> - перенести все траты из одной категории в другую\n"
+        "/renamekat <старое название> to <новое название> - переименовать категорию\n"
+        "/today - отчёт по тратам за сегодня\n"
+        "/week - отчёт по тратам за неделю\n"
+        "/month - отчёт по тратам за месяц\n"
+        "/date <дата> - отчёт по тратам за определённую дату\n"
+        "/daterange <дата1> - <дата2> - отчёт по тратам за период\n"
+        "/help - список всех команд"
+    )
+    update.message.reply_text(help_text)
+
 # Вывод кнопок с категориями
 def show_categories(update: Update, context):
     conn = sqlite3.connect('finance_bot.db')
@@ -129,6 +232,10 @@ def main():
     # Регистрация команд
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("regkat", regkat))
+    dp.add_handler(CommandHandler("delkat", delkat))
+    dp.add_handler(CommandHandler("transkat", transkat))
+    dp.add_handler(CommandHandler("renamekat", renamekat))
+    dp.add_handler(CommandHandler("help", help_command))
     dp.add_handler(CommandHandler("today", report_today))
     dp.add_handler(CommandHandler("categories", show_categories))
     dp.add_handler(CallbackQueryHandler(button_click))
