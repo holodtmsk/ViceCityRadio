@@ -1,6 +1,6 @@
 import sqlite3
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # Инициализация базы данных
 def init_db():
@@ -39,40 +39,51 @@ def add_category(update: Update, context):
     
     update.message.reply_text(f"Категория '{category_name}' добавлена.")
 
-# Отображение кнопок категорий
+# Отображение кнопок категорий внизу
 def show_categories(update: Update, context):
     conn = sqlite3.connect('finance_bot.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name FROM categories WHERE user_id = ?", (update.message.from_user.id,))
+    cursor.execute("SELECT name FROM categories WHERE user_id = ?", (update.message.from_user.id,))
     categories = cursor.fetchall()
 
     if not categories:
         update.message.reply_text("Категорий пока нет. Используйте /addcategory для добавления.")
         return
+
+    # Формируем список кнопок для каждой категории
+    category_buttons = [[category[0]] for category in categories]
     
-    keyboard = [[InlineKeyboardButton(name, callback_data=str(category_id))] for category_id, name in categories]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
+    reply_markup = ReplyKeyboardMarkup(category_buttons, one_time_keyboard=False, resize_keyboard=True)
     update.message.reply_text('Выберите категорию:', reply_markup=reply_markup)
 
 # Обработка выбора категории и запись траты
-def handle_category_selection(update: Update, context):
-    query = update.callback_query
-    query.answer()
+def handle_expense(update: Update, context):
+    user = update.message.from_user
+    category_name = update.message.text
 
-    category_id = int(query.data)
-    context.user_data['category_id'] = category_id
-    query.edit_message_text(f"Вы выбрали категорию с ID: {category_id}. Введите сумму траты:")
+    # Ищем категорию в базе данных
+    conn = sqlite3.connect('finance_bot.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM categories WHERE name = ? AND user_id = ?", (category_name, user.id))
+    category = cursor.fetchone()
 
-# Обработка ввода суммы
-def handle_message(update: Update, context):
+    if not category:
+        update.message.reply_text("Такой категории не существует. Пожалуйста, выберите существующую категорию.")
+        return
+
+    # Запрашиваем сумму траты
+    context.user_data['category_id'] = category[0]
+    update.message.reply_text(f"Введите сумму для категории '{category_name}'.")
+
+# Обработка суммы и запись траты в базу данных
+def handle_amount(update: Update, context):
     user = update.message.from_user
     category_id = context.user_data.get('category_id')
-    
+
     if not category_id:
         update.message.reply_text("Пожалуйста, сначала выберите категорию.")
         return
-    
+
     try:
         amount = float(update.message.text)
     except ValueError:
@@ -96,8 +107,8 @@ def main():
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", show_categories))
     dp.add_handler(CommandHandler("addcategory", add_category))
-    dp.add_handler(CallbackQueryHandler(handle_category_selection))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_expense))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_amount))
 
     updater.start_polling()
     updater.idle()
