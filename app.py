@@ -1,32 +1,28 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-# Функция для старта, которая выводит кнопки
+# Функция для старта, которая выводит кнопки снизу
 def start(update: Update, context):
     # Создаем кнопки
-    keyboard = [
-        [InlineKeyboardButton("Продукты", callback_data='1')],
-        [InlineKeyboardButton("Кафе", callback_data='2')],
-        [InlineKeyboardButton("Машина", callback_data='3')]
-    ]
+    keyboard = [['Продукты', 'Кафе', 'Машина']]
     
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
     
     # Отправляем сообщение с кнопками
     update.message.reply_text('Выберите категорию:', reply_markup=reply_markup)
 
-# Функция для обработки нажатий на кнопки
-def button(update: Update, context):
-    query = update.callback_query
-    query.answer()
-    
-    # Обрабатываем нажатие в зависимости от callback_data
-    if query.data == '1':
-        query.edit_message_text(text="Вы выбрали Продукты.")
-    elif query.data == '2':
-        query.edit_message_text(text="Вы выбрали Кафе.")
-    elif query.data == '3':
-        query.edit_message_text(text="Вы выбрали Машина.")
+# Функция для обработки выбора
+def button_response(update: Update, context):
+    text = update.message.text
+
+    if text == 'Продукты':
+        update.message.reply_text("Вы выбрали Продукты.")
+    elif text == 'Кафе':
+        update.message.reply_text("Вы выбрали Кафе.")
+    elif text == 'Машина':
+        update.message.reply_text("Вы выбрали Машина.")
+    else:
+        update.message.reply_text("Выберите одну из предложенных категорий.")
 
 # Основная функция запуска бота
 def main():
@@ -38,8 +34,8 @@ def main():
     # Команда /start для вывода кнопок
     dp.add_handler(CommandHandler("start", start))
     
-    # Обработчик нажатий на кнопки
-    dp.add_handler(CallbackQueryHandler(button))
+    # Обработчик выбора кнопки
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, button_response))
 
     # Запуск бота
     updater.start_polling()
