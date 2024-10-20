@@ -47,6 +47,9 @@ def regkat(update: Update, context):
     conn.close()
     
     update.message.reply_text(f"Категория {category_name} {emoji} добавлена!")
+    
+    # Сразу показываем кнопки категорий
+    show_categories(update, context)
 
 # Удаление категории и всех трат по ней
 def delkat(update: Update, context):
@@ -114,7 +117,7 @@ def transkat(update: Update, context):
 def renamekat(update: Update, context):
     user = update.message.from_user
     args = context.args
-    if len(args) < 3 or args[1].lower() != "to":
+    if len(args) < 3 или args[1].lower() != "to":
         update.message.reply_text("Использование: /renamekat <старое название> to <новое название>")
         return
     
