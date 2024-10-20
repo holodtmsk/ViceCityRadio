@@ -135,6 +135,29 @@ def renamekat(update: Update, context):
     
     conn.close()
 
+# Приглашение нового пользователя
+def invite(update: Update, context):
+    admin_user = update.message.from_user
+    if len(context.args) == 0:
+        update.message.reply_text("Пожалуйста, укажите пользователя для приглашения.")
+        return
+
+    invited_username = context.args[0].replace('@', '')
+    conn = sqlite3.connect('finance_bot.db')
+    cursor = conn.cursor()
+
+    # Проверка, является ли отправитель администратором
+    cursor.execute("SELECT is_admin FROM users WHERE username = ? AND is_admin = 1", (admin_user.username,))
+    if cursor.fetchone() is None:
+        update.message.reply_text("У вас нет прав на приглашение пользователей.")
+        return
+
+    # Добавление нового пользователя
+    cursor.execute("INSERT OR IGNORE INTO users (username, is_admin) VALUES (?, 0)", (invited_username,))
+    conn.commit()
+    update.message.reply_text(f"Пользователь @{invited_username} приглашён.")
+    conn.close()
+
 # Вывод списка всех команд
 def help_command(update: Update, context):
     help_text = (
@@ -142,6 +165,7 @@ def help_command(update: Update, context):
         "/delkat <название категории> - удалить категорию и все траты по ней\n"
         "/transkat <из категории> to <в категорию> - перенести все траты из одной категории в другую\n"
         "/renamekat <старое название> to <новое название> - переименовать категорию\n"
+        "/invite <@ник пользователя> - пригласить нового пользователя\n"
         "/today - отчёт по тратам за сегодня\n"
         "/week - отчёт по тратам за неделю\n"
         "/month - отчёт по тратам за месяц\n"
@@ -235,6 +259,7 @@ def main():
     dp.add_handler(CommandHandler("delkat", delkat))
     dp.add_handler(CommandHandler("transkat", transkat))
     dp.add_handler(CommandHandler("renamekat", renamekat))
+    dp.add_handler(CommandHandler("invite", invite))
     dp.add_handler(CommandHandler("help", help_command))
     dp.add_handler(CommandHandler("today", report_today))
     dp.add_handler(CommandHandler("categories", show_categories))
