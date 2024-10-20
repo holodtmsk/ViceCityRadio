@@ -6,7 +6,7 @@ def start(update, context):
 
 def main():
     # Инициализация бота
-    updater = Updater("YOUR_BOT_API_TOKEN", use_context=True)
+    updater = Updater("7726770034:AAE_X60ycvljNiGE-j0qLhjNaWZiPlpPRNU", use_context=True)
 
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
