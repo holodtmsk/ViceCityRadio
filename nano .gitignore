@@ -1,0 +1,22 @@
+# macOS системные файлы
+.DS_Store
+.Trash
+.AppleDouble
+.LSOverride
+._*
+
+# Системные папки macOS
+/Library/
+/System/
+/Applications/
+/private/
+/Users/Shared/
+
+# Другие системные файлы и кэш
+.Spotlight-V100
+.Trashes
+.TemporaryItems
+.DocumentRevisions-V100
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
